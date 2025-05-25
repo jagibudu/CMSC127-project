@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import StudentRoutes from './routes/StudentRoute.js' 
+import OrganizationRoutes from './routes/OrganizationRoute.js'
 
 dotenv.config();
 
@@ -24,7 +25,8 @@ ConnectDB().then(dbPool => {
         next(); 
     });
 
-    app.use("/students", StudentRoutes); 
+    app.use("/students", StudentRoutes);
+    app.use("/organization", OrganizationRoutes) 
     app.listen(port, () => console.log(`Listening on ${port}`));
 }).catch(error => {
     console.error('Database connection failed:', error);
