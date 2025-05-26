@@ -1,4 +1,4 @@
-
+import express from "express";
 // Add these imports to your membership_controller import
 import { 
     getAllMemberships,
