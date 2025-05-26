@@ -49,6 +49,88 @@ export const getUnpaidFees = async (req, res) => {
     }
 };
 
+// NEW REPORT FUNCTIONS
+export const getUnpaidFeesByOrganizationAndSemester = async (req, res) => {
+    const { organization_id, year, semester } = req.query;
+    
+    if (!organization_id || !year || !semester) {
+        return res.status(400).send("organization_id, year, and semester are required");
+    }
+    
+    try {
+        const feeModel = new Fee(req.pool);
+        const fees = await feeModel.getUnpaidFeesByOrganizationAndSemester(organization_id, year, semester);
+        res.json(fees);
+    } catch (error) {
+        console.error("Error fetching unpaid fees by organization and semester:", error);
+        res.status(500).send("Internal server error");
+    }
+};
+
+export const getUnpaidFeesByStudent = async (req, res) => {
+    const { student_number } = req.params;
+    
+    try {
+        const feeModel = new Fee(req.pool);
+        const fees = await feeModel.getUnpaidFeesByStudent(student_number);
+        res.json(fees);
+    } catch (error) {
+        console.error("Error fetching unpaid fees by student:", error);
+        res.status(500).send("Internal server error");
+    }
+};
+
+export const getLateFeesByOrganizationAndYear = async (req, res) => {
+    const { organization_id, year } = req.query;
+    
+    if (!organization_id || !year) {
+        return res.status(400).send("organization_id and year are required");
+    }
+    
+    try {
+        const feeModel = new Fee(req.pool);
+        const fees = await feeModel.getLateFeesByOrganizationAndYear(organization_id, year);
+        res.json(fees);
+    } catch (error) {
+        console.error("Error fetching late fees:", error);
+        res.status(500).send("Internal server error");
+    }
+};
+
+export const getTotalFeesByOrganization = async (req, res) => {
+    const { organization_id, as_of_date } = req.query;
+    
+    if (!organization_id) {
+        return res.status(400).send("organization_id is required");
+    }
+    
+    try {
+        const feeModel = new Fee(req.pool);
+        const totals = await feeModel.getTotalFeesByOrganization(organization_id, as_of_date);
+        res.json(totals);
+    } catch (error) {
+        console.error("Error fetching total fees by organization:", error);
+        res.status(500).send("Internal server error");
+    }
+};
+
+export const getHighestDebtorsBySemester = async (req, res) => {
+    const { year, semester, limit } = req.query;
+    
+    if (!year || !semester) {
+        return res.status(400).send("year and semester are required");
+    }
+    
+    try {
+        const feeModel = new Fee(req.pool);
+        const debtors = await feeModel.getHighestDebtorsBySemester(year, semester, limit || 1);
+        res.json(debtors);
+    } catch (error) {
+        console.error("Error fetching highest debtors:", error);
+        res.status(500).send("Internal server error");
+    }
+};
+
 export const createFeeRecord = async (req, res) => {
     const { fee_id, label, status, amount, date_issue, due_date, organization_id, student_number } = req.body;
     

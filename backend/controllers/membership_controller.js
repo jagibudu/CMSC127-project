@@ -62,6 +62,86 @@ export const getActiveMembers = async (req, res) => {
     }
 };
 
+// NEW REPORT FUNCTIONS
+export const getMembersByFilters = async (req, res) => {
+    const { role, status, gender, degree_program, batch, committee_name, organization_id } = req.query;
+    
+    try {
+        const membershipModel = new Membership(req.pool);
+        const members = await membershipModel.getMembersByFilters({
+            role, status, gender, degree_program, batch, committee_name, organization_id
+        });
+        res.json(members);
+    } catch (error) {
+        console.error("Error fetching members by filters:", error);
+        res.status(500).send("Internal server error");
+    }
+};
+
+export const getExecutiveCommitteeMembers = async (req, res) => {
+    const { organization_id, year } = req.query;
+    
+    if (!organization_id || !year) {
+        return res.status(400).send("organization_id and year are required");
+    }
+    
+    try {
+        const membershipModel = new Membership(req.pool);
+        const members = await membershipModel.getExecutiveCommitteeMembers(organization_id, year);
+        res.json(members);
+    } catch (error) {
+        console.error("Error fetching executive committee members:", error);
+        res.status(500).send("Internal server error");
+    }
+};
+
+export const getMembersByRole = async (req, res) => {
+    const { role } = req.params;
+    
+    try {
+        const membershipModel = new Membership(req.pool);
+        const members = await membershipModel.getMembersByRole(role);
+        res.json(members);
+    } catch (error) {
+        console.error("Error fetching members by role:", error);
+        res.status(500).send("Internal server error");
+    }
+};
+
+export const getMembershipStatusPercentage = async (req, res) => {
+    const { organization_id, years_back } = req.query;
+    
+    if (!organization_id) {
+        return res.status(400).send("organization_id is required");
+    }
+    
+    try {
+        const membershipModel = new Membership(req.pool);
+        const stats = await membershipModel.getMembershipStatusPercentage(organization_id, years_back || 1);
+        res.json(stats);
+    } catch (error) {
+        console.error("Error fetching membership status percentage:", error);
+        res.status(500).send("Internal server error");
+    }
+};
+
+export const getAlumniMembers = async (req, res) => {
+    const { organization_id, as_of_date } = req.query;
+    
+    if (!organization_id) {
+        return res.status(400).send("organization_id is required");
+    }
+    
+    try {
+        const membershipModel = new Membership(req.pool);
+        const alumni = await membershipModel.getAlumniMembers(organization_id, as_of_date);
+        res.json(alumni);
+    } catch (error) {
+        console.error("Error fetching alumni members:", error);
+        res.status(500).send("Internal server error");
+    }
+};
+
 export const createMembershipRecord = async (req, res) => {
     const { student_number, organization_id, committee_id, membership_date, status, role } = req.body;
     

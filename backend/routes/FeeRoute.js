@@ -1,10 +1,14 @@
-// routes/FeeRoute.js
-import express from "express";
+// Add these imports to your fee_controller import
 import { 
     getAllFees, 
     getFeesByStudent,
     getFeesByOrganization,
     getUnpaidFees,
+    getUnpaidFeesByOrganizationAndSemester,  // ADD THIS
+    getUnpaidFeesByStudent,                   // ADD THIS  
+    getLateFeesByOrganizationAndYear,        // ADD THIS
+    getTotalFeesByOrganization,              // ADD THIS
+    getHighestDebtorsBySemester,             // ADD THIS
     createFeeRecord,
     updateFeeRecord,
     updateFeeStatus,
@@ -36,5 +40,21 @@ router.patch("/status", updateFeeStatus);
 
 // Delete fee
 router.delete("/", deleteFeeRecord);
+
+// NEW REPORT ROUTES
+// Get unpaid fees by organization and semester
+router.get("/unpaid/organization-semester", getUnpaidFeesByOrganizationAndSemester);
+
+// Get unpaid fees by student  
+router.get("/unpaid/student/:student_number", getUnpaidFeesByStudent);
+
+// Get late fees by organization and year
+router.get("/late", getLateFeesByOrganizationAndYear);
+
+// Get total fees by organization
+router.get("/totals", getTotalFeesByOrganization);
+
+// Get highest debtors by semester
+router.get("/debtors", getHighestDebtorsBySemester);
 
 export default router;

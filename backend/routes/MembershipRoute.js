@@ -1,11 +1,16 @@
-// routes/MembershipRoute.js
-import express from "express";
+
+// Add these imports to your membership_controller import
 import { 
     getAllMemberships,
     getAllMembershipsWithBalance,
     getMembershipsByStudent,
     getMembershipsByOrganization,
     getActiveMembers,
+    getMembersByFilters,              // ADD THIS
+    getExecutiveCommitteeMembers,     // ADD THIS
+    getMembersByRole,                 // ADD THIS  
+    getMembershipStatusPercentage,    // ADD THIS
+    getAlumniMembers,                 // ADD THIS
     createMembershipRecord,
     updateMembershipRecord,
     updateMembershipStatus,
@@ -40,5 +45,21 @@ router.patch("/status", updateMembershipStatus);
 
 // Delete membership
 router.delete("/", deleteMembershipRecord);
+
+// NEW REPORT ROUTES
+// Get members by various filters
+router.get("/filter", getMembersByFilters);
+
+// Get executive committee members
+router.get("/executive", getExecutiveCommitteeMembers);
+
+// Get members by role
+router.get("/role/:role", getMembersByRole);
+
+// Get membership status percentage
+router.get("/status-percentage", getMembershipStatusPercentage);
+
+// Get alumni members
+router.get("/alumni", getAlumniMembers);
 
 export default router;

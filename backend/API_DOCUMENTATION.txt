@@ -1,0 +1,442 @@
+----------------------------------------------------
+STUDENT OBJECT FIELDS
+----------------------------------------------------
+- student_number (primary key)
+- first_name
+- middle_initial
+- last_name
+- gender
+- degree_program
+
+----------------------------------------------------
+STUDENT ENDPOINTS
+----------------------------------------------------
+GET /students
+Parameters: None
+Return: Array of student objects
+
+POST /students
+Parameters: student_number, first_name, middle_initial (optional), last_name, gender, degree_program (optional)
+Return: { student_number, first_name, middle_initial, last_name, gender, degree_program }
+
+PUT /students
+Parameters: student_number, first_name (optional), middle_initial (optional), last_name (optional), gender (optional), degree_program (optional)
+Return: { student_number, first_name, middle_initial, last_name, gender, degree_program }
+
+DELETE /students
+Parameters: student_number
+Return: "Student {student_number} deleted successfully"
+
+----------------------------------------------------
+ORGANIZATION OBJECT FIELDS
+----------------------------------------------------
+- organization_id (primary key)
+- organization_name
+
+----------------------------------------------------
+ORGANIZATION ENDPOINTS
+----------------------------------------------------
+
+GET /organization
+Parameters: None
+Return: Array of organization objects
+
+POST /organization
+Parameters: organization_id, organization_name (optional)
+Return: { organization_id, organization_name }
+
+PUT /organization
+Parameters: organization_id, organization_name (optional)
+Return: { organization_id, organization_name }
+
+DELETE /organization
+Parameters: organization_id
+Return: "Organization {organization_id} deleted successfully"
+
+----------------------------------------------------
+ORGANIZATION COMMITTEE OBJECT FIELDS
+----------------------------------------------------
+- committee_id (auto-generated primary key)
+- organization_id
+- committee_name
+
+----------------------------------------------------
+ORGANIZATION COMMITTEE ENDPOINTS
+----------------------------------------------------
+GET /organization-committee
+Parameters: None
+Return: Array of committee objects
+
+GET /organization-committee/:organization_id
+Parameters: organization_id (route param)
+Return: Array of committees for specific organization
+
+POST /organization-committee
+Parameters: organization_id, committee_name (optional)
+Return: { committee_id, organization_id, committee_name }
+
+PUT /organization-committee
+Parameters: committee_id, organization_id (optional), committee_name (optional)
+Return: { committee_id, organization_id, committee_name }
+
+DELETE /organization-committee
+Parameters: committee_id
+Return: "Committee {committee_id} deleted successfully"
+
+----------------------------------------------------
+ORGANIZATION EVENT OBJECT FIELDS
+----------------------------------------------------
+- event_id (auto-generated primary key)
+- organization_id
+- event_name
+- organization_name (from JOIN)
+
+----------------------------------------------------
+ORGANIZATION EVENT ENDPOINTS
+----------------------------------------------------
+GET /organization-event
+Parameters: None
+Return: Array of event objects with organization names
+
+GET /organization-event/:organization_id
+Parameters: organization_id (route param)
+Return: Array of events for specific organization
+
+POST /organization-event
+Parameters: organization_id, event_name
+Return: { event_id, organization_id, event_name }
+
+PUT /organization-event
+Parameters: event_id, organization_id (optional), event_name (optional)
+Return: { event_id, organization_id, event_name }
+
+DELETE /organization-event
+Parameters: event_id
+Return: "Event {event_id} deleted successfully"
+
+----------------------------------------------------
+MEMBERSHIP OBJECT FIELDS
+----------------------------------------------------
+- student_number (composite primary key)
+- organization_id (composite primary key)
+- committee_id
+- membership_date
+- status (Active, Alumni, Inactive)
+- role (Member, Officer, President, etc.)
+- remaining_balance (from BELONGS_TO_WITH_BALANCE view)
+- first_name (from JOIN with STUDENT)
+- last_name (from JOIN with STUDENT)
+- gender (from JOIN with STUDENT)
+- degree_program (from JOIN with STUDENT)
+- organization_name (from JOIN with ORGANIZATION)
+- committee_name (from JOIN with ORGANIZATION_COMMITTEE)
+
+----------------------------------------------------
+MEMBERSHIP ENDPOINTS
+----------------------------------------------------
+GET /membership
+Parameters: None
+Return: Array of membership objects with student, organization, and committee details
+
+GET /membership/balance
+Parameters: None
+Return: Array of membership objects with remaining balance from BELONGS_TO_WITH_BALANCE view
+
+GET /membership/active
+Query Parameters: organization_id (optional)
+Return: Array of active membership objects
+
+GET /membership/student/:student_number
+Parameters: student_number (route param)
+Return: Array of memberships for specific student
+
+GET /membership/organization/:organization_id
+Parameters: organization_id (route param)
+Return: Array of memberships for specific organization
+
+POST /membership
+Parameters: student_number, organization_id, committee_id (optional), membership_date (optional), status (optional, default: 'Active'), role (optional, default: 'Member')
+Return: { student_number, organization_id, committee_id, membership_date, status, role }
+
+PUT /membership
+Parameters: student_number, organization_id, committee_id (optional), membership_date (optional), status (optional), role (optional)
+Return: { student_number, organization_id, committee_id, membership_date, status, role }
+
+PATCH /membership/status
+Parameters: student_number, organization_id, status
+Return: { student_number, organization_id, status, message: "Membership status updated successfully" }
+
+DELETE /membership
+Parameters: student_number, organization_id
+Return: "Membership for student {student_number} in organization {organization_id} deleted successfully"
+
+----------------------------------------------------
+MEMBERSHIP REPORT ENDPOINTS
+----------------------------------------------------
+GET /membership/filter
+Query Parameters: role, status, gender, degree_program, batch, committee_name, organization_id
+Return: Array of filtered membership objects with student details
+
+GET /membership/executive
+Query Parameters: organization_id (required), year (required)
+Return: Array of executive committee members for specific organization and year
+
+GET /membership/role/:role
+Parameters: role (route param)
+Return: Array of members with specific role across all organizations
+
+GET /membership/status-percentage
+Query Parameters: organization_id (required), years_back (optional, default: 1)
+Return: Array of status percentage statistics { status, count, percentage }
+
+GET /membership/alumni
+Query Parameters: organization_id (required), as_of_date (optional)
+Return: Array of alumni members for specific organization
+
+----------------------------------------------------
+FEE OBJECT FIELDS
+----------------------------------------------------
+- fee_id (primary key)
+- label
+- status (default: 'Unpaid')
+- amount
+- date_issue
+- due_date
+- organization_id
+- student_number
+- first_name (from JOIN)
+- last_name (from JOIN)
+- organization_name (from JOIN)
+
+----------------------------------------------------
+BASIC FEE ENDPOINTS
+----------------------------------------------------
+GET /fee
+Parameters: None
+Return: Array of fee objects with student and organization details
+
+GET /fee/unpaid
+Parameters: None
+Return: Array of unpaid fee objects
+
+GET /fee/student/:student_number
+Parameters: student_number (route param)
+Return: Array of fees for specific student
+
+GET /fee/organization/:organization_id
+Parameters: organization_id (route param)
+Return: Array of fees for specific organization
+
+POST /fee
+Parameters: fee_id, label (optional), status (optional), amount, date_issue (optional), due_date (optional), organization_id, student_number
+Return: { fee_id, label, status, amount, date_issue, due_date, organization_id, student_number }
+
+PUT /fee
+Parameters: fee_id, label (optional), status (optional), amount (optional), date_issue (optional), due_date (optional), organization_id (optional), student_number (optional)
+Return: { fee_id, label, status, amount, date_issue, due_date, organization_id, student_number }
+
+PATCH /fee/status
+Parameters: fee_id, status
+Return: { fee_id, status, message: "Fee status updated successfully" }
+
+DELETE /fee
+Parameters: fee_id
+Return: "Fee {fee_id} deleted successfully"
+
+----------------------------------------------------
+ADVANCED FEE REPORT ENDPOINTS
+----------------------------------------------------
+GET /fee/unpaid/organization-semester
+Query Parameters: organization_id, year, semester
+Required: organization_id, year, semester
+Return: Array of unpaid fees filtered by organization and semester
+
+GET /fee/unpaid/student/:student_number
+Parameters: student_number (route param)
+Return: Array of unpaid fees for specific student
+
+GET /fee/late
+Query Parameters: organization_id, year
+Required: organization_id, year
+Return: Array of late fees with days_overdue calculation
+
+GET /fee/totals
+Query Parameters: organization_id, as_of_date (optional)
+Required: organization_id
+Return: { 
+  total_fees, 
+  total_amount, 
+  paid_amount, 
+  unpaid_amount, 
+  paid_count, 
+  unpaid_count 
+}
+
+GET /fee/debtors
+Query Parameters: year, semester, limit (optional, default: 1)
+Required: year, semester
+Return: Array of highest debtors with total_debt and fee_count
+
+----------------------------------------------------
+SEMESTER LOGIC
+----------------------------------------------------
+Semester Parameter Values:
+- 'First': January-June (months 1-6)
+- 'Second': July-December (months 7-12)
+
+----------------------------------------------------
+FEE STATUS VALUES
+----------------------------------------------------
+- 'Unpaid': Default status for new fees
+- 'Paid': Fees that have been settled
+- 'Late': Fees past due date (can be updated automatically)
+
+----------------------------------------------------
+MEMBERSHIP STATUS VALUES
+----------------------------------------------------
+- 'Active': Currently active member
+- 'Alumni': Former member who has graduated
+- 'Inactive': Temporarily inactive member
+
+----------------------------------------------------
+MEMBERSHIP ROLE VALUES
+----------------------------------------------------
+- 'Member': Regular member
+- 'Officer': Committee officer
+- 'President': Organization president
+- 'Vice President': Organization vice president
+- 'Secretary': Organization secretary
+- 'Treasurer': Organization treasurer
+- 'Committee Chair': Committee chairperson
+
+----------------------------------------------------
+SERVER CONFIG
+----------------------------------------------------
+
+EXPRESS SETUP
+- Framework: Express.js
+- Database: MySQL via mysql2 connection pool
+- Env config: dotenv
+
+MIDDLEWARE
+- express.json(): JSON body parsing
+- bodyParser.json(): Additional JSON parsing
+- express.urlencoded({ extended: true }): URL-encoded body parsing
+- cors(): Cross-origin resource sharing enabled
+
+DATABASE CONNECTION
+- Connection pool attached to req.pool for all requests
+- Environment variables for table names:
+  - DB_FEETABLE
+  - DB_STUDENTTABLE
+  - DB_ORGANIZATIONTABLE
+  - DB_ORGANIZATIONCOMMITTEETABLE
+  - DB_ORGANIZATIONEVENTTABLE
+  - DB_BELONGSTOTABLE
+
+ROUTES
+- GET /
+  Returns: "SQL Database API Server - Student Organization Management System"
+
+- /students → StudentRoutes
+- /organization → OrganizationRoutes
+- /organization-committee → OrganizationCommitteeRoutes
+- /organization-event → OrganizationEventRoutes
+- /fee → FeeRoutes
+- /membership → MembershipRoutes
+
+ERROR HANDLING
+- 404 fallback: { error: 'Route not found' }
+- General errors: { error: 'Something went wrong!' }
+- Specific validation errors: 400 status with descriptive messages
+- Conflict errors: 409 status for existing records
+- Not found errors: 404 status for non-existent records
+
+SERVER START
+- Default PORT: 3000
+- Database connection required before server start
+- Graceful error handling for database connection failures
+
+----------------------------------------------------
+VALIDATION RULES
+----------------------------------------------------
+
+STUDENT VALIDATION
+- student_number: Required
+- gender: Required
+- All other fields: Optional
+
+ORGANIZATION VALIDATION
+- organization_id: Required
+- organization_name: Optional
+
+COMMITTEE VALIDATION
+- organization_id: Required
+- committee_name: Optional
+
+EVENT VALIDATION
+- organization_id: Required
+- event_name: Required
+
+FEE VALIDATION
+- fee_id: Required
+- amount: Required
+- organization_id: Required
+- student_number: Required
+- All other fields: Optional
+
+MEMBERSHIP VALIDATION
+- student_number: Required
+- organization_id: Required
+- committee_id: Optional
+- membership_date: Optional
+- status: Optional (default: 'Active')
+- role: Optional (default: 'Member')
+
+----------------------------------------------------
+RESPONSE FORMATS
+----------------------------------------------------
+
+SUCCESS RESPONSES
+- GET requests: JSON array or object
+- POST requests: 201 status with created object
+- PUT/PATCH requests: 200 status with updated object
+- DELETE requests: 200 status with success message
+
+ERROR RESPONSES
+- 400: Bad Request - Missing required parameters
+- 404: Not Found - Record does not exist
+- 409: Conflict - Record already exists
+- 500: Internal Server Error - Database or server error
+
+----------------------------------------------------
+SPECIAL FEATURES
+----------------------------------------------------
+
+AUTOMATIC JOINS
+- Fee queries automatically join with Student and Organization tables
+- Event queries automatically join with Organization table
+- Membership queries automatically join with Student, Organization, and Committee tables
+- Provides enriched data without additional requests
+
+FLEXIBLE REPORTING
+- Semester-based filtering using date ranges
+- Debt calculation and ranking
+- Organization-specific totals and summaries
+- Late fee tracking with overdue calculations
+- Membership filtering by multiple criteria
+- Executive committee member tracking
+- Alumni member management
+- Status percentage analytics
+- Role-based member reporting
+
+BATCH OPERATIONS
+- Support for updating overdue fees to 'Late' status
+- Bulk reporting across multiple dimensions
+- Efficient querying with proper indexing assumptions
+- Composite key handling for membership records
+
+DATABASE VIEWS
+- BELONGS_TO_WITH_BALANCE view for membership balance calculations
+- Automatic balance tracking for members
+- Enhanced reporting capabilities through database views
