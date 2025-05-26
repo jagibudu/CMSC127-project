@@ -51,3 +51,5 @@ class OrganizationEvent {
         await this.pool.query(`DELETE FROM ${this.table} WHERE event_id = ?`, [event_id]);
     }
 }
+
+export default OrganizationEvent;

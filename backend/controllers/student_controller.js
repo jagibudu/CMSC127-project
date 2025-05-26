@@ -1,14 +1,9 @@
 // controllers/student_controller.js
 import Student from '../models/Student.js';
 
-let studentModel = null;
-
-export const initializeModel = (dbPool) => {
-    studentModel = new Student(dbPool);
-};
-
 export const getAllStudents = async (req, res) => {
     try {
+        const studentModel = new Student(req.pool);
         const students = await studentModel.getAll();
         res.json(students);
     } catch (error) {
@@ -25,6 +20,8 @@ export const createStudentRecord = async (req, res) => {
     }
     
     try {
+        const studentModel = new Student(req.pool);
+        
         if (await studentModel.exists(student_number)) {
             return res.status(409).send('Student already exists');
         }
@@ -45,6 +42,8 @@ export const updateStudentRecord = async (req, res) => {
     }
     
     try {
+        const studentModel = new Student(req.pool);
+        
         if (!(await studentModel.exists(student_number))) {
             return res.status(404).send("Student does not exist");
         }
@@ -65,6 +64,8 @@ export const deleteStudentRecord = async (req, res) => {
     }
     
     try {
+        const studentModel = new Student(req.pool);
+        
         if (!(await studentModel.exists(student_number))) {
             return res.status(404).send("Student does not exist");
         }

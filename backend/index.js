@@ -9,11 +9,9 @@ import cors from 'cors';
 import StudentRoutes from './routes/StudentRoute.js';
 import OrganizationRoutes from './routes/OrganizationRoute.js';
 import OrganizationCommitteeRoutes from './routes/OrganizationCommitteeRoute.js';
-
-// Import controller functions to initialize models
-import { initializeModel as initializeStudentModel } from './controllers/student_controller.js';
-import { initializeModel as initializeOrganizationModel } from './controllers/organization_controller.js';
-import { initializeModel as initializeOrganizationCommitteeModel } from './controllers/organization_committee_controller.js';
+import OrganizationEventRoutes from './routes/OrganizationEventRoute.js';
+import MembershipRoutes from './routes/MembershipRoute.js';
+import FeeRoutes from './routes/FeeRoute.js';
 
 dotenv.config();
 
@@ -32,12 +30,7 @@ let pool;
 ConnectDB().then(dbPool => {
     pool = dbPool;
     
-    // Initialize models in controllers
-    initializeStudentModel(pool);
-    initializeOrganizationModel(pool);
-    initializeOrganizationCommitteeModel(pool);
-    
-    // Middleware to attach pool to requests (for backward compatibility if needed)
+    // Middleware to attach pool to requests
     app.use((req, res, next) => {
         req.pool = pool;
         next();
@@ -57,6 +50,9 @@ ConnectDB().then(dbPool => {
     app.use("/students", StudentRoutes);
     app.use("/organization", OrganizationRoutes);
     app.use("/organization-committee", OrganizationCommitteeRoutes);
+    app.use("/organization-event", OrganizationEventRoutes);
+    app.use("/membership", MembershipRoutes);
+    app.use("/fee", FeeRoutes);
     
     // Error handling middleware
     app.use((err, req, res, next) => {
@@ -72,7 +68,7 @@ ConnectDB().then(dbPool => {
     // Start server
     app.listen(port, () => {
         console.log(`Server listening on port ${port}`);
-        console.log('Database connected and models initialized successfully');
+        console.log('Database connected successfully');
     });
 }).catch(error => {
     console.error('Database connection failed:', error);

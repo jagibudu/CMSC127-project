@@ -1,14 +1,9 @@
 // controllers/organization_event_controller.js
 import OrganizationEvent from '../models/OrganizationEvent.js';
 
-let eventModel = null;
-
-export const initializeModel = (dbPool) => {
-    eventModel = new OrganizationEvent(dbPool);
-};
-
 export const getAllEvents = async (req, res) => {
     try {
+        const eventModel = new OrganizationEvent(req.pool);
         const events = await eventModel.getAll();
         res.json(events);
     } catch (error) {
@@ -21,6 +16,7 @@ export const getEventsByOrganization = async (req, res) => {
     const { organization_id } = req.params;
     
     try {
+        const eventModel = new OrganizationEvent(req.pool);
         const events = await eventModel.getByOrganization(organization_id);
         res.json(events);
     } catch (error) {
@@ -37,6 +33,7 @@ export const createEventRecord = async (req, res) => {
     }
     
     try {
+        const eventModel = new OrganizationEvent(req.pool);
         const event_id = await eventModel.create({ organization_id, event_name });
         res.status(201).json({ event_id, organization_id, event_name });
     } catch (error) {
@@ -53,6 +50,8 @@ export const updateEventRecord = async (req, res) => {
     }
     
     try {
+        const eventModel = new OrganizationEvent(req.pool);
+        
         if (!(await eventModel.exists(event_id))) {
             return res.status(404).send("Event does not exist");
         }
@@ -73,6 +72,8 @@ export const deleteEventRecord = async (req, res) => {
     }
     
     try {
+        const eventModel = new OrganizationEvent(req.pool);
+        
         if (!(await eventModel.exists(event_id))) {
             return res.status(404).send("Event does not exist");
         }

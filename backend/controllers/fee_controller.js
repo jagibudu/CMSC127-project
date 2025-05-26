@@ -1,14 +1,9 @@
 // controllers/fee_controller.js
 import Fee from '../models/Fee.js';
 
-let feeModel = null;
-
-export const initializeModel = (dbPool) => {
-    feeModel = new Fee(dbPool);
-};
-
 export const getAllFees = async (req, res) => {
     try {
+        const feeModel = new Fee(req.pool);
         const fees = await feeModel.getAll();
         res.json(fees);
     } catch (error) {
@@ -21,6 +16,7 @@ export const getFeesByStudent = async (req, res) => {
     const { student_number } = req.params;
     
     try {
+        const feeModel = new Fee(req.pool);
         const fees = await feeModel.getByStudent(student_number);
         res.json(fees);
     } catch (error) {
@@ -33,6 +29,7 @@ export const getFeesByOrganization = async (req, res) => {
     const { organization_id } = req.params;
     
     try {
+        const feeModel = new Fee(req.pool);
         const fees = await feeModel.getByOrganization(organization_id);
         res.json(fees);
     } catch (error) {
@@ -43,6 +40,7 @@ export const getFeesByOrganization = async (req, res) => {
 
 export const getUnpaidFees = async (req, res) => {
     try {
+        const feeModel = new Fee(req.pool);
         const fees = await feeModel.getUnpaidFees();
         res.json(fees);
     } catch (error) {
@@ -59,6 +57,8 @@ export const createFeeRecord = async (req, res) => {
     }
     
     try {
+        const feeModel = new Fee(req.pool);
+        
         if (await feeModel.exists(fee_id)) {
             return res.status(409).send("Fee already exists");
         }
@@ -79,6 +79,8 @@ export const updateFeeRecord = async (req, res) => {
     }
     
     try {
+        const feeModel = new Fee(req.pool);
+        
         if (!(await feeModel.exists(fee_id))) {
             return res.status(404).send("Fee does not exist");
         }
@@ -99,6 +101,8 @@ export const updateFeeStatus = async (req, res) => {
     }
     
     try {
+        const feeModel = new Fee(req.pool);
+        
         if (!(await feeModel.exists(fee_id))) {
             return res.status(404).send("Fee does not exist");
         }
@@ -119,6 +123,8 @@ export const deleteFeeRecord = async (req, res) => {
     }
     
     try {
+        const feeModel = new Fee(req.pool);
+        
         if (!(await feeModel.exists(fee_id))) {
             return res.status(404).send("Fee does not exist");
         }

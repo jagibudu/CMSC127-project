@@ -1,14 +1,9 @@
 // controllers/membership_controller.js
 import Membership from '../models/Membership.js';
 
-let membershipModel = null;
-
-export const initializeModel = (dbPool) => {
-    membershipModel = new Membership(dbPool);
-};
-
 export const getAllMemberships = async (req, res) => {
     try {
+        const membershipModel = new Membership(req.pool);
         const memberships = await membershipModel.getAll();
         res.json(memberships);
     } catch (error) {
@@ -19,6 +14,7 @@ export const getAllMemberships = async (req, res) => {
 
 export const getAllMembershipsWithBalance = async (req, res) => {
     try {
+        const membershipModel = new Membership(req.pool);
         const memberships = await membershipModel.getAllWithBalance();
         res.json(memberships);
     } catch (error) {
@@ -31,6 +27,7 @@ export const getMembershipsByStudent = async (req, res) => {
     const { student_number } = req.params;
     
     try {
+        const membershipModel = new Membership(req.pool);
         const memberships = await membershipModel.getByStudent(student_number);
         res.json(memberships);
     } catch (error) {
@@ -43,6 +40,7 @@ export const getMembershipsByOrganization = async (req, res) => {
     const { organization_id } = req.params;
     
     try {
+        const membershipModel = new Membership(req.pool);
         const memberships = await membershipModel.getByOrganization(organization_id);
         res.json(memberships);
     } catch (error) {
@@ -55,6 +53,7 @@ export const getActiveMembers = async (req, res) => {
     const { organization_id } = req.query;
     
     try {
+        const membershipModel = new Membership(req.pool);
         const members = await membershipModel.getActiveMembers(organization_id);
         res.json(members);
     } catch (error) {
@@ -71,6 +70,8 @@ export const createMembershipRecord = async (req, res) => {
     }
     
     try {
+        const membershipModel = new Membership(req.pool);
+        
         if (await membershipModel.exists(student_number, organization_id)) {
             return res.status(409).send("Membership already exists");
         }
@@ -98,6 +99,8 @@ export const updateMembershipRecord = async (req, res) => {
     }
     
     try {
+        const membershipModel = new Membership(req.pool);
+        
         if (!(await membershipModel.exists(student_number, organization_id))) {
             return res.status(404).send("Membership does not exist");
         }
@@ -118,6 +121,8 @@ export const updateMembershipStatus = async (req, res) => {
     }
     
     try {
+        const membershipModel = new Membership(req.pool);
+        
         if (!(await membershipModel.exists(student_number, organization_id))) {
             return res.status(404).send("Membership does not exist");
         }
@@ -138,6 +143,8 @@ export const deleteMembershipRecord = async (req, res) => {
     }
     
     try {
+        const membershipModel = new Membership(req.pool);
+        
         if (!(await membershipModel.exists(student_number, organization_id))) {
             return res.status(404).send("Membership does not exist");
         }

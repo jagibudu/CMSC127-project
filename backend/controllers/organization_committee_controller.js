@@ -1,14 +1,9 @@
 // controllers/organization_committee_controller.js
 import OrganizationCommittee from '../models/OrganizationCommittee.js';
 
-let committeeModel = null;
-
-export const initializeModel = (dbPool) => {
-    committeeModel = new OrganizationCommittee(dbPool);
-};
-
 export const getAllCommittees = async (req, res) => {
     try {
+        const committeeModel = new OrganizationCommittee(req.pool);
         const committees = await committeeModel.getAll();
         res.json(committees);
     } catch (error) {
@@ -21,6 +16,7 @@ export const getCommitteesByOrganization = async (req, res) => {
     const { organization_id } = req.params;
     
     try {
+        const committeeModel = new OrganizationCommittee(req.pool);
         const committees = await committeeModel.getByOrganization(organization_id);
         res.json(committees);
     } catch (error) {
@@ -37,6 +33,7 @@ export const createCommitteeRecord = async (req, res) => {
     }
     
     try {
+        const committeeModel = new OrganizationCommittee(req.pool);
         const committee_id = await committeeModel.create({ organization_id, committee_name });
         res.status(201).json({ committee_id, organization_id, committee_name });
     } catch (error) {
@@ -53,6 +50,8 @@ export const updateCommitteeRecord = async (req, res) => {
     }
     
     try {
+        const committeeModel = new OrganizationCommittee(req.pool);
+        
         if (!(await committeeModel.exists(committee_id))) {
             return res.status(404).send("Committee does not exist");
         }
@@ -73,6 +72,8 @@ export const deleteCommitteeRecord = async (req, res) => {
     }
     
     try {
+        const committeeModel = new OrganizationCommittee(req.pool);
+        
         if (!(await committeeModel.exists(committee_id))) {
             return res.status(404).send("Committee does not exist");
         }

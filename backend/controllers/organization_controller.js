@@ -1,15 +1,9 @@
-
 // controllers/organization_controller.js
 import Organization from '../models/Organization.js';
 
-let organizationModel = null;
-
-export const initializeModel = (dbPool) => {
-    organizationModel = new Organization(dbPool);
-};
-
 export const getAllOrganizations = async (req, res) => {
     try {
+        const organizationModel = new Organization(req.pool);
         const organizations = await organizationModel.getAll();
         res.json(organizations);
     } catch (error) {
@@ -26,6 +20,8 @@ export const createOrganizationRecord = async (req, res) => {
     }
     
     try {
+        const organizationModel = new Organization(req.pool);
+        
         if (await organizationModel.exists(organization_id)) {
             return res.status(409).send("Organization already exists");
         }
@@ -46,6 +42,8 @@ export const updateOrganizationRecord = async (req, res) => {
     }
     
     try {
+        const organizationModel = new Organization(req.pool);
+        
         if (!(await organizationModel.exists(organization_id))) {
             return res.status(404).send("Organization does not exist");
         }
@@ -66,6 +64,8 @@ export const deleteOrganizationRecord = async (req, res) => {
     }
     
     try {
+        const organizationModel = new Organization(req.pool);
+        
         if (!(await organizationModel.exists(organization_id))) {
             return res.status(404).send("Organization does not exist");
         }
