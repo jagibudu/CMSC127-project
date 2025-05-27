@@ -123,19 +123,21 @@ const RoleBadge = ({ role }) => {
 };
 
 const MembershipManagement = () => {
-  const [memberships, setMemberships] = useState([]);
-  const [students, setStudents] = useState([]);
-  const [organizations, setOrganizations] = useState([]);
-  const [committees, setCommittees] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
-  const [modalMode, setModalMode] = useState('create');
-  const [selectedMembership, setSelectedMembership] = useState(null);
-  const [organizationRoles, setOrganizationRoles] = useState([]);
-  const [filterRoles, setFilterRoles] = useState([]);
-  const [filters, setFilters] = useState({
+    const [memberships, setMemberships] = useState([]);
+    const [students, setStudents] = useState([]);
+    const [organizations, setOrganizations] = useState([]);
+    const [committees, setCommittees] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
+    const [modalMode, setModalMode] = useState('create');
+    const [selectedMembership, setSelectedMembership] = useState(null);
+    const [organizationRoles, setOrganizationRoles] = useState([]);
+    const [filterRoles, setFilterRoles] = useState([]);
+    const [showCustomRole, setShowCustomRole] = useState(false);
+    const [customRole, setCustomRole] = useState('');
+    const [filters, setFilters] = useState({
     organization_id: '',
     status: '',
     role: '',
@@ -671,12 +673,62 @@ const filteredMemberships = memberships.filter(membership => {
                 onChange={(e) => setFormData({...formData, status: e.target.value})}
                 options={statusOptions}
               />
-            <Select
-            label="Role"
-            value={formData.role}
-            onChange={(e) => setFormData({...formData, role: e.target.value})}
-            options={organizationRoles.length > 0 ? organizationRoles : roleOptions}
-            />
+            <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Role
+                </label>
+                <select
+                    value={showCustomRole ? 'custom' : formData.role}
+                    onChange={(e) => {
+                    if (e.target.value === 'custom') {
+                        setShowCustomRole(true);
+                        setFormData({...formData, role: ''});
+                    } else {
+                        setShowCustomRole(false);
+                        setFormData({...formData, role: e.target.value});
+                        setCustomRole('');
+                    }
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                    <option value="">Select...</option>
+                    {(organizationRoles.length > 0 ? organizationRoles : roleOptions).map((option) => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                    ))}
+                    <option value="custom">New Role (Custom)</option>
+                </select>
+                
+                {showCustomRole && (
+                    <div className="mt-2">
+                    <input
+                        type="text"
+                        value={customRole}
+                        onChange={(e) => {
+                        setCustomRole(e.target.value);
+                        setFormData({...formData, role: e.target.value});
+                        }}
+                        placeholder="Enter custom role name..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        autoFocus
+                    />
+                    <div className="flex gap-2 mt-2">
+                        <button
+                        type="button"
+                        onClick={() => {
+                            setShowCustomRole(false);
+                            setFormData({...formData, role: 'Member'});
+                            setCustomRole('');
+                        }}
+                        className="px-3 py-1 text-sm bg-gray-500 hover:bg-gray-600 text-white rounded"
+                        >
+                        Cancel
+                        </button>
+                    </div>
+                    </div>
+                )}
+                </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
               <Button variant="secondary" onClick={() => setShowModal(false)}>
