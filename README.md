@@ -62,7 +62,14 @@ This document outlines the various reports to be generated for tracking organiza
     - View the member(s) with the highest debt in a given organization for a specific semester.
 
 ---
+These reports help to better understand and manage the dynamics, obligations, and participation within the organization/s.
 
-🧾 Use these reports to better understand and manage the dynamics, obligations, and participation within your organization's membership.
+## Technology Stack
 
-**
+The application is built using the following technologies:
+
+- **SQL** – Used for managing relational data including members, organizations, fees, and reports.
+- **Node.js** – Provides the runtime environment for executing backend JavaScript code.
+- **Express.js** – A minimal and flexible Node.js web application framework used to build RESTful APIs.
+- **React** – A JavaScript library for building fast and interactive user interfaces on the frontend.
+
