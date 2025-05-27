@@ -458,7 +458,7 @@ const FeeReports = () => {
 
           <div className="rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow border-l-4 border-[#95c097]">
             <div className="flex items-center mb-3">
-              <User className="w-6 h-6 text-[#2e7d32] mr-2" />
+              <User className="w-6 h-6 text-[#616161] mr-2" />
               <div>
                 <h4 className="font-semibold text-[#212121] text-sm">Student's Unpaid Fees</h4>
                 <p className="text-xs text-[#424242] mt-1">Requires student selection</p>
