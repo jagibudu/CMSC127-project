@@ -6,7 +6,6 @@ import MembershipManagement from './pages/MembershipManagement';
 import FeeManagement from './pages/FeeManagement';
 import EventManagement from './pages/EventManagement';
 import CommitteeManagement from './pages/CommitteeManagement';
-import ReportsManagement from './pages/ReportsManagementSystem';
 
 const TabButton = ({ active, onClick, children, icon: Icon }) => (
   <button
@@ -32,7 +31,6 @@ function App() {
     { id: 'fees', label: 'Fees', icon: DollarSign },
     { id: 'events', label: 'Events', icon: Calendar },
     { id: 'committees', label: 'Committees', icon: Settings },
-    { id: 'reports', label: 'Reports', icon: Settings }
   ];
 
   const renderActiveComponent = () => {
@@ -49,8 +47,6 @@ function App() {
         return <EventManagement />;
       case 'committees':
         return <CommitteeManagement />;
-      case 'reports':
-        return <ReportsManagement />;
       default:
         return <StudentManagement />;
     }
