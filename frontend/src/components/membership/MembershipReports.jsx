@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FileText, Download, Calendar, Users, Award, TrendingUp, GraduationCap } from 'lucide-react';
-import Button from '../components/ui/Button';
-import Select from '../components/ui/Select';
-import Input from '../components/ui/Input';
-import Modal from '../components/ui/Modal';
-import { StatusBadge, RoleBadge } from '../components/ui/Badges';
+import Button from '../ui/Button';
+import Select from '../ui/Select';
+import Input from '../ui/Input';
+import Modal from '../ui/Modal';
+import { StatusBadge, RoleBadge } from '../ui/Badges';
 
 const API_BASE_URL = 'http://localhost:3000';
 
