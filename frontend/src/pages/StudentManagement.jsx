@@ -31,7 +31,7 @@ const Button = ({ variant = 'primary', size = 'md', onClick, children, className
   );
 };
 
-const Input = ({ label, placeholder, value, onChange, type = 'text', required = false }) => (
+const Input = ({ label, placeholder, value, onChange, type = 'text', required = false, disabled = false }) => (
   <div className="mb-4">
     <label className="block text-sm font-medium text-gray-700 mb-2">
       {label} {required && <span className="text-red-500">*</span>}
@@ -41,6 +41,7 @@ const Input = ({ label, placeholder, value, onChange, type = 'text', required = 
       value={value}
       onChange={onChange}
       placeholder={placeholder}
+      disabled={disabled}
       className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#158fd4] focus:border-[#158fd4] transition-all duration-200"
       required={required}
     />
@@ -228,8 +229,8 @@ const StudentManagement = () => {
   };
 
   const handleUpdate = async () => {
-    if (!formData.student_number) {
-      alert('Student Number is required');
+    if (!formData.first_name || !formData.last_name || !formData.gender || !formData.degree_program) {
+      alert('First Name, Last Name, Gender, and Degree Program are required');
       return;
     }
 
@@ -486,7 +487,7 @@ const StudentManagement = () => {
                 <thead className="bg-gradient-to-r from-[#158fd4] to-[#0e4a80] text-white">
                   <tr>
                     <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider w-[20%]">
-                      Student Number
+                      Student ID
                     </th>
                     <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider w-[25%]">
                       Name
@@ -546,7 +547,7 @@ const StudentManagement = () => {
                     key={pageNum}
                     onClick={() => goToPage(pageNum)}
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
-                      currentPage === pageNum
+                      pageNum === currentPage
                         ? 'bg-[#158fd4] text-white shadow-sm'
                         : 'text-gray-600 hover:bg-gray-50 border border-gray-200'
                     }`}
@@ -610,34 +611,37 @@ const StudentManagement = () => {
         ) : (
           <div>
             <Input
-              label="Student Number"
-              placeholder="Ex: 2021-12345"
+              label="Student ID"
+              placeholder="Ex: 12345"
               value={formData.student_number}
-              onChange={(e) => setFormData({...formData, student_number: e.target.value})}
-              required
+              onChange={modalMode === 'create' ? (e) => setFormData({ ...formData, student_number: e.target.value }) : undefined}
+              required={modalMode === 'create'}
+              disabled={modalMode === 'edit'}
             />
             <Input
               label="First Name"
               placeholder="Ex: John"
               value={formData.first_name}
-              onChange={(e) => setFormData({...formData, first_name: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+              required={modalMode === 'edit'}
             />
             <Input
               label="Middle Initial"
               placeholder="Ex: D"
               value={formData.middle_initial}
-              onChange={(e) => setFormData({...formData, middle_initial: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, middle_initial: e.target.value })}
             />
             <Input
               label="Last Name"
               placeholder="Ex: Doe"
               value={formData.last_name}
-              onChange={(e) => setFormData({...formData, last_name: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+              required={modalMode === 'edit'}
             />
             <Select
               label="Gender"
               value={formData.gender}
-              onChange={(e) => setFormData({...formData, gender: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
               options={genderOptions}
               placeholder="Select Gender"
               required
@@ -645,9 +649,10 @@ const StudentManagement = () => {
             <Select
               label="Degree Program"
               value={formData.degree_program}
-              onChange={(e) => setFormData({...formData, degree_program: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, degree_program: e.target.value })}
               options={degreeProgramOptions}
               placeholder="Select Degree Program"
+              required={modalMode === 'edit'}
             />
             <div className="flex justify-end gap-3 mt-6">
               <Button
