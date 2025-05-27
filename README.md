@@ -61,6 +61,23 @@
 ---
 These reports help to better understand and manage the dynamics, obligations, and participation within the organization/s.
 
+# Folder Structure
+```
+CMSC127-project/
+├─ backend/
+│  ├─ controllers//
+│  ├─ db//
+│  ├─ routes//
+frontend/
+├─ public/
+├─ src/
+│  ├─ assets/
+│  ├─ components/
+│  ├─ pages/
+│  ├─ App.jsx
+│  ├─ main.jsx
+```
+
 # Technology Stack
 
 The application is built using the following technologies:
@@ -69,4 +86,8 @@ The application is built using the following technologies:
 - **Node.js** – Provides the runtime environment for executing backend JavaScript code.
 - **Express.js** – A minimal and flexible Node.js web application framework used to build RESTful APIs.
 - **React** – A JavaScript library for building fast and interactive user interfaces on the frontend.
+- **Tailwind CSS** - To avoid specifity hell
+
+
+
 
