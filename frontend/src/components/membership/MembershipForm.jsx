@@ -33,6 +33,7 @@ const MembershipForm = ({
             label: `${student.student_number} - ${student.first_name} ${student.last_name}`
           }))}
           required
+          className="w-full text-[#01050b] border-[#9daecc] focus:ring-[#158fd4] focus:border-[#158fd4] bg-[#ffffff]"
         />
         <Select
           label="Organization"
@@ -43,6 +44,7 @@ const MembershipForm = ({
             label: org.organization_name || org.organization_id
           }))}
           required
+          className="w-full text-[#01050b] border-[#9daecc] focus:ring-[#158fd4] focus:border-[#158fd4] bg-[#ffffff]"
         />
         <Select
           label="Committee"
@@ -52,18 +54,21 @@ const MembershipForm = ({
             value: committee.committee_id,
             label: committee.committee_name
           }))}
+          className="w-full text-[#01050b] border-[#9daecc] focus:ring-[#158fd4] focus:border-[#158fd4] bg-[#ffffff]"
         />
         <Input
           label="Membership Date"
           type="date"
           value={formData.membership_date}
           onChange={(e) => setFormData({...formData, membership_date: e.target.value})}
+          className="w-full text-[#01050b] border-[#9daecc] focus:ring-[#158fd4] focus:border-[#158fd4] bg-[#ffffff]"
         />
         <Select
           label="Status"
           value={formData.status}
           onChange={(e) => setFormData({...formData, status: e.target.value})}
           options={statusOptions}
+          className="w-full text-[#01050b] border-[#9daecc] focus:ring-[#158fd4] focus:border-[#158fd4] bg-[#ffffff]"
         />
         <CustomRoleInput
           showCustomRole={showCustomRole}
@@ -77,12 +82,17 @@ const MembershipForm = ({
         />
       </div>
       <div className="flex justify-end gap-3 mt-6">
-        <Button variant="secondary" onClick={onCancel}>
+        <Button 
+          variant="secondary" 
+          onClick={onCancel}
+          className="px-3 py-1 text-sm bg-[#9daecc] hover:bg-[#0e4a80] text-[#ffffff] rounded"
+        >
           Cancel
         </Button>
         <Button 
           variant={modalMode === 'create' ? 'success' : 'warning'}
           onClick={onSubmit}
+          className="px-3 py-1 text-sm bg-[#158fd4] hover:bg-[#0e4a80] text-[#ffffff] rounded"
         >
           {modalMode === 'create' ? 'Create Membership' : 'Update Membership'}
         </Button>

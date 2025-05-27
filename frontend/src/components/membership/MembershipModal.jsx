@@ -49,18 +49,26 @@ const MembershipModal = ({
       isOpen={showModal}
       onClose={handleCancel}
       title={getModalTitle()}
+      className="bg-[#ffffff] border-[#9daecc] text-[#01050b]"
     >
       {modalMode === 'delete' ? (
         <div>
-          <p className="text-gray-600 mb-6">
-            Are you sure you want to delete the membership for student {selectedMembership?.student_number} 
-            in {selectedMembership?.organization_name}?
+          <p className="text-[#01050b] mb-6">
+            Are you sure you want to delete the membership for student {selectedMembership?.student_number} in {selectedMembership?.organization_name}?
           </p>
           <div className="flex justify-end gap-3">
-            <Button variant="secondary" onClick={handleCancel}>
+            <Button 
+              variant="secondary" 
+              onClick={handleCancel}
+              className="px-3 py-1 text-sm bg-[#9daecc] hover:bg-[#0e4a80] text-[#ffffff] rounded"
+            >
               Cancel
             </Button>
-            <Button variant="danger" onClick={onDelete}>
+            <Button 
+              variant="danger" 
+              onClick={onDelete}
+              className="px-3 py-1 text-sm bg-[#158fd4] hover:bg-[#0e4a80] text-[#ffffff] rounded"
+            >
               Delete
             </Button>
           </div>
