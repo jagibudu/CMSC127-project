@@ -3,7 +3,9 @@
 **SOMA** or Student-Organization Management Application is an information system designed to streamline the management of student organizations, including their events, memberships, and finances. This system aims to enhance organizational efficiency and provide centralized tools for managing all aspects of student-led groups within the academe.
 
 
-### Core Functionality
+
+
+## Core Functionality
 
 1. **Membership Management**
    - Add, update, delete, and search for members.
