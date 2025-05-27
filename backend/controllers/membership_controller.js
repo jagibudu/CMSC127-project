@@ -95,6 +95,19 @@ export const getExecutiveCommitteeMembers = async (req, res) => {
     }
 };
 
+export const getRoles = async (req, res) => {
+    const { organization_id } = req.query;
+    
+    try {
+        const membershipModel = new Membership(req.pool);
+        const roles = await membershipModel.getRolesByOrganization(organization_id);
+        res.json(roles);
+    } catch (error) {
+        console.error("Error fetching roles:", error);
+        res.status(500).send("Internal server error");
+    }
+};
+
 export const getMembersByRole = async (req, res) => {
     const { role } = req.params;
     
