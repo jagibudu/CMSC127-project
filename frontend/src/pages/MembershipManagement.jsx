@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Users, FileText } from 'lucide-react';
+import { Users, FileText, BarChart3, TrendingUp } from 'lucide-react';
 import MembershipHeader from '../components/membership/MembershipHeader';
 import MembershipFilters from '../components/membership/MembershipFilters';
 import MembershipTable from '../components/membership/MembershipTable';
@@ -68,7 +68,7 @@ const MembershipPage = () => {
   // Tab configuration
   const tabs = [
     { id: 'members', label: 'Members', icon: Users },
-    { id: 'reports', label: 'Reports', icon: FileText }
+    { id: 'reports', label: 'Reports', icon: BarChart3 }
   ];
 
   // Effects
@@ -314,11 +314,51 @@ const MembershipPage = () => {
   const activeCount = filteredMemberships.filter(m => m.status === 'Active').length;
 
   return (
-    <div className="space-y-6">
-      {/* Tab Navigation */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="border-b border-gray-200">
-          <nav className="flex space-x-8 px-6" aria-label="Tabs">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
+      {/* Header Section */}
+      <div className="mb-8">
+        <div className="bg-gradient-to-r from-[#158fd4] to-[#01050b] text-white rounded-2xl p-8 shadow-xl">
+          <h1 className="text-3xl font-bold mb-2">Membership Management</h1>
+          <p className="text-blue-100">Manage student organization memberships and generate reports</p>
+          
+          {/* Quick Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-100 text-sm">Total Members</p>
+                  <p className="text-2xl font-bold">{totalCount}</p>
+                </div>
+                <Users className="h-8 w-8 text-blue-200" />
+              </div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-100 text-sm">Active Members</p>
+                  <p className="text-2xl font-bold">{activeCount}</p>
+                </div>
+                <TrendingUp className="h-8 w-8 text-green-300" />
+              </div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-100 text-sm">Organizations</p>
+                  <p className="text-2xl font-bold">{organizations.length}</p>
+                </div>
+                <BarChart3 className="h-8 w-8 text-[#9daecc]" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        {/* Tab Navigation */}
+        <div className="bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-200">
+          <nav className="flex space-x-1 px-6" aria-label="Tabs">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -327,9 +367,9 @@ const MembershipPage = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`${
                     activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2`}
+                      ? 'bg-white text-[#158fd4] shadow-sm border-t-2 border-[#158fd4]'
+                      : 'text-gray-600 hover:text-[#158fd4] hover:bg-white/50'
+                  } whitespace-nowrap py-4 px-6 font-medium text-sm flex items-center gap-2 rounded-t-xl transition-all duration-200`}
                 >
                   <Icon size={16} />
                   {tab.label}
@@ -340,9 +380,9 @@ const MembershipPage = () => {
         </div>
 
         {/* Tab Content */}
-        <div className="p-6">
+        <div className="p-8">
           {activeTab === 'members' && (
-            <>
+            <div className="space-y-6">
               <MembershipHeader
                 showFilters={showFilters}
                 setShowFilters={setShowFilters}
@@ -369,7 +409,7 @@ const MembershipPage = () => {
                 onDelete={openDeleteModal}
                 loading={loading}
               />
-            </>
+            </div>
           )}
 
           {activeTab === 'reports' && (

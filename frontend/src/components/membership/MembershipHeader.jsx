@@ -5,59 +5,98 @@ import Button from '../ui/Button';
 const MembershipHeader = ({ 
   showFilters, 
   setShowFilters, 
-  onAddMembership, 
+  onAddMembership,
   searchTerm, 
   setSearchTerm, 
-  totalCount, 
-  activeCount 
+  totalCount = 0, 
+  activeCount = 0,
+  isLoading = false
 }) => {
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  };
+
   return (
-    <>
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900">Membership Management</h2>
-          <p className="text-sm text-gray-600 mt-1">Manage student organization memberships</p>
+    <div className="bg-white border-b border-gray-200 pb-6">
+      {/* Header Section */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
+        <div className="flex-1">
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">
+            Membership Management
+          </h1>
+          <p className="text-gray-600">
+            Manage student organization memberships and track participation
+          </p>
         </div>
-        <div className="flex gap-2">
+        
+        <div className="flex flex-wrap gap-2">
           <Button 
             variant="secondary" 
             onClick={() => setShowFilters(!showFilters)}
             className="flex items-center gap-2"
+            disabled={isLoading}
           >
             <Filter size={16} />
             Filters
           </Button>
-          <Button onClick={onAddMembership} className="flex items-center gap-2">
+          
+          <Button 
+            onClick={onAddMembership} 
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+            disabled={isLoading}
+          >
             <Plus size={16} />
             Add Membership
           </Button>
         </div>
       </div>
 
-      <div className="mb-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+      {/* Search Section */}
+      <div className="mb-6">
+        <div className="relative max-w-md">
+          <Search 
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" 
+            size={18} 
+          />
           <input
             type="text"
-            placeholder="Search by student number, name, organization, or committee..."
+            placeholder="Search members, organizations, committees..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={handleSearchChange}
+            onKeyPress={handleKeyPress}
+            className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow shadow-sm"
+            disabled={isLoading}
           />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              type="button"
+            >
+              ×
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="mb-4 flex items-center gap-4 text-sm text-gray-600">
-        <div className="flex items-center gap-2">
+      {/* Stats Section */}
+      <div className="flex items-center gap-6 text-sm">
+        <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 rounded-full">
           <Users size={16} />
-          <span>Total: {totalCount}</span>
+          <span className="font-medium">Total: {totalCount}</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 px-3 py-2 bg-green-50 text-green-700 rounded-full">
           <UserCheck size={16} />
-          <span>Active: {activeCount}</span>
+          <span className="font-medium">Active: {activeCount}</span>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
