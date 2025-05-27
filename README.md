@@ -21,7 +21,7 @@
 
 This document outlines the various reports to be generated for tracking organization membership, roles, fee statuses, and other relevant data. These reports are crucial for managing members effectively across semesters and academic years.
 
-# 📋 Reports to be Generated
+# 📋 Generated Reports
 
 1. **Member Overview Report**
    - View all members of the organization by:
