@@ -17,9 +17,6 @@
    - Manage membership fees and dues.
    - Generate reports on the organization's financial status.
 
-**# Organization Membership Reports
-
-This document outlines the various reports to be generated for tracking organization membership, roles, fee statuses, and other relevant data. These reports are crucial for managing members effectively across semesters and academic years.
 
 # 📋 Generated Reports
 
