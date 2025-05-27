@@ -1,4 +1,5 @@
 // Add these imports to your fee_controller import
+import express from "express";
 import { 
     getAllFees, 
     getFeesByStudent,

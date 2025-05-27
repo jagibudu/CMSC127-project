@@ -1,4 +1,4 @@
-
+import express from "express";
 // Add these imports to your membership_controller import
 import { 
     getAllMemberships,
@@ -8,6 +8,7 @@ import {
     getActiveMembers,
     getMembersByFilters,              // ADD THIS
     getExecutiveCommitteeMembers,     // ADD THIS
+    getRoles, 
     getMembersByRole,                 // ADD THIS  
     getMembershipStatusPercentage,    // ADD THIS
     getAlumniMembers,                 // ADD THIS
@@ -27,6 +28,7 @@ router.get("/balance", getAllMembershipsWithBalance);
 
 // Get active members (optionally filtered by organization)
 router.get("/active", getActiveMembers);
+router.get("/roles", getRoles);
 
 // Get memberships by student
 router.get("/student/:student_number", getMembershipsByStudent);

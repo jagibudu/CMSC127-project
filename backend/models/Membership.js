@@ -283,6 +283,25 @@ class Membership {
             [student_number, organization_id]
         );
     }
+
+    async getRolesByOrganization(organization_id = null) {
+        let query = `
+            SELECT DISTINCT role 
+            FROM ${this.table} 
+            WHERE role IS NOT NULL AND role != ''
+        `;
+        const params = [];
+        
+        if (organization_id) {
+            query += ' AND organization_id = ?';
+            params.push(organization_id);
+        }
+        
+        query += ' ORDER BY role';
+        
+        const [results] = await this.pool.query(query, params);
+        return results;
+    }
 }
 
 export default Membership;
