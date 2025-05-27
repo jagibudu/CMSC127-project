@@ -151,11 +151,13 @@ const MembershipManagement = () => {
     role: 'Member'
   });
 
-  const statusOptions = [
-    { value: 'Active', label: 'Active' },
-    { value: 'Alumni', label: 'Alumni' },
-    { value: 'Inactive', label: 'Inactive' }
-  ];
+const statusOptions = [
+  { value: 'Active', label: 'Active' },
+  { value: 'Inactive', label: 'Inactive' },
+  { value: 'Alumni', label: 'Alumni' },
+  { value: 'Expelled', label: 'Expelled' },
+  { value: 'Suspended', label: 'Suspended' }
+];
 
   const roleOptions = [
     { value: 'Member', label: 'Member' },
@@ -362,22 +364,28 @@ const resetForm = () => {
     setShowModal(true);
   };
 
-  const filteredMemberships = memberships.filter(membership => {
-    const matchesSearch = 
-      membership.student_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      membership.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      membership.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      membership.organization_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      membership.committee_name?.toLowerCase().includes(searchTerm.toLowerCase());
+const filteredMemberships = memberships.filter(membership => {
+  const matchesSearch = 
+    membership.student_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    membership.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    membership.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    membership.organization_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    membership.committee_name?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesOrg = !filters.organization_id || membership.organization_id === filters.organization_id;
-    const matchesStatus = !filters.status || membership.status === filters.status;
-    const matchesRole = !filters.role || membership.role === filters.role;
-    const matchesGender = !filters.gender || membership.gender === filters.gender;
-    const matchesDegree = !filters.degree_program || membership.degree_program?.toLowerCase().includes(filters.degree_program.toLowerCase());
+  // FIX: Convert both values to strings for comparison
+  const matchesOrg = !filters.organization_id || 
+    membership.organization_id?.toString() === filters.organization_id;
+  
+  const matchesStatus = !filters.status || membership.status === filters.status;
+  const matchesRole = !filters.role || membership.role === filters.role;
+  
+  // FIX: Gender should work fine now with exact matching since DB uses ENUM
+  const matchesGender = !filters.gender || membership.gender === filters.gender;
+  const matchesDegree = !filters.degree_program || 
+    membership.degree_program?.toLowerCase().includes(filters.degree_program.toLowerCase());
 
-    return matchesSearch && matchesOrg && matchesStatus && matchesRole && matchesGender && matchesDegree;
-  });
+  return matchesSearch && matchesOrg && matchesStatus && matchesRole && matchesGender && matchesDegree;
+});
 
   const clearFilters = () => {
     setFilters({
@@ -458,18 +466,19 @@ const resetForm = () => {
                         ))}
                     </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-                  <select
-                    value={filters.gender}
-                    onChange={(e) => setFilters({...filters, gender: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                  >
-                    <option value="">All Genders</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                  </select>
-                </div>
+                    <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                    <select
+                        value={filters.gender}
+                        onChange={(e) => setFilters({...filters, gender: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                    >
+                        <option value="">All Genders</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Degree Program</label>
                   <input

@@ -8,7 +8,8 @@ class Membership {
 
     async getAll() {
         const [results] = await this.pool.query(`
-            SELECT bt.*, s.first_name, s.last_name, o.organization_name, oc.committee_name
+            SELECT bt.*, s.first_name, s.last_name, s.gender, s.degree_program, 
+                   o.organization_name, oc.committee_name
             FROM ${this.table} bt
             LEFT JOIN STUDENT s ON bt.student_number = s.student_number
             LEFT JOIN ORGANIZATION o ON bt.organization_id = o.organization_id
@@ -18,14 +19,22 @@ class Membership {
     }
 
     async getAllWithBalance() {
-        const [results] = await this.pool.query(`SELECT * FROM ${this.viewTable}`);
+        const [results] = await this.pool.query(`
+            SELECT btwb.*, s.first_name, s.last_name, s.gender, s.degree_program, 
+                   o.organization_name
+            FROM ${this.viewTable} btwb
+            LEFT JOIN STUDENT s ON btwb.student_number = s.student_number
+            LEFT JOIN ORGANIZATION o ON btwb.organization_id = o.organization_id
+        `);
         return results;
     }
 
     async getByStudent(student_number) {
         const [results] = await this.pool.query(`
-            SELECT bt.*, o.organization_name, oc.committee_name
+            SELECT bt.*, s.first_name, s.last_name, s.gender, s.degree_program,
+                   o.organization_name, oc.committee_name
             FROM ${this.table} bt
+            LEFT JOIN STUDENT s ON bt.student_number = s.student_number
             LEFT JOIN ORGANIZATION o ON bt.organization_id = o.organization_id
             LEFT JOIN ORGANIZATION_COMMITTEE oc ON bt.committee_id = oc.committee_id
             WHERE bt.student_number = ?
@@ -35,7 +44,8 @@ class Membership {
 
     async getByOrganization(organization_id) {
         const [results] = await this.pool.query(`
-            SELECT bt.*, s.first_name, s.last_name, oc.committee_name
+            SELECT bt.*, s.first_name, s.last_name, s.gender, s.degree_program, 
+                   oc.committee_name
             FROM ${this.table} bt
             LEFT JOIN STUDENT s ON bt.student_number = s.student_number
             LEFT JOIN ORGANIZATION_COMMITTEE oc ON bt.committee_id = oc.committee_id
@@ -46,7 +56,8 @@ class Membership {
 
     async getActiveMembers(organization_id = null) {
         let query = `
-            SELECT bt.*, s.first_name, s.last_name, o.organization_name, oc.committee_name
+            SELECT bt.*, s.first_name, s.last_name, s.gender, s.degree_program,
+                   o.organization_name, oc.committee_name
             FROM ${this.table} bt
             LEFT JOIN STUDENT s ON bt.student_number = s.student_number
             LEFT JOIN ORGANIZATION o ON bt.organization_id = o.organization_id
