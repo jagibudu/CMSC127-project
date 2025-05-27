@@ -10,10 +10,7 @@ import MembershipReports from '../components/membership/MembershipReports';
 const API_BASE_URL = 'http://localhost:3000';
 
 const MembershipPage = () => {
-  // Tab state
   const [activeTab, setActiveTab] = useState('members');
-
-  // State management
   const [memberships, setMemberships] = useState([]);
   const [students, setStudents] = useState([]);
   const [organizations, setOrganizations] = useState([]);
@@ -46,7 +43,6 @@ const MembershipPage = () => {
     role: 'Member'
   });
 
-  // Options constants
   const statusOptions = [
     { value: 'Active', label: 'Active' },
     { value: 'Inactive', label: 'Inactive' },
@@ -65,13 +61,11 @@ const MembershipPage = () => {
     { value: 'Committee Chair', label: 'Committee Chair' }
   ];
 
-  // Tab configuration
   const tabs = [
     { id: 'members', label: 'Members', icon: Users },
     { id: 'reports', label: 'Reports', icon: BarChart3 }
   ];
 
-  // Effects
   useEffect(() => {
     fetchMemberships();
     fetchStudents();
@@ -91,7 +85,6 @@ const MembershipPage = () => {
     fetchFilterRoles(filters.organization_id);
   }, [filters.organization_id]);
 
-  // API Functions
   const fetchMemberships = async () => {
     setLoading(true);
     try {
@@ -158,7 +151,6 @@ const MembershipPage = () => {
     }
   };
 
-  // CRUD Operations
   const handleCreate = async () => {
     if (!formData.student_number || !formData.organization_id) {
       alert('Student Number and Organization are required');
@@ -228,7 +220,6 @@ const MembershipPage = () => {
     }
   };
 
-  // Helper Functions
   const resetForm = () => {
     setFormData({
       student_number: '',
@@ -288,7 +279,6 @@ const MembershipPage = () => {
     });
   };
 
-  // Filtering Logic
   const filteredMemberships = memberships.filter(membership => {
     const matchesSearch = 
       membership.student_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -309,19 +299,15 @@ const MembershipPage = () => {
     return matchesSearch && matchesOrg && matchesStatus && matchesRole && matchesGender && matchesDegree;
   });
 
-  // Calculate stats
   const totalCount = filteredMemberships.length;
   const activeCount = filteredMemberships.filter(m => m.status === 'Active').length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
-      {/* Header Section */}
       <div className="mb-8">
         <div className="bg-gradient-to-r from-[#158fd4] to-[#01050b] text-white rounded-2xl p-8 shadow-xl">
           <h1 className="text-3xl font-bold mb-2">Membership Management</h1>
           <p className="text-blue-100">Manage student organization memberships and generate reports</p>
-          
-          {/* Quick Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
               <div className="flex items-center justify-between">
@@ -353,10 +339,7 @@ const MembershipPage = () => {
           </div>
         </div>
       </div>
-
-      {/* Main Content */}
       <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-        {/* Tab Navigation */}
         <div className="bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-200">
           <nav className="flex space-x-1 px-6" aria-label="Tabs">
             {tabs.map((tab) => {
@@ -378,8 +361,6 @@ const MembershipPage = () => {
             })}
           </nav>
         </div>
-
-        {/* Tab Content */}
         <div className="p-8">
           {activeTab === 'members' && (
             <div className="space-y-6">
