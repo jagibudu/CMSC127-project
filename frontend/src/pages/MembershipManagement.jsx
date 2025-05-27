@@ -5,7 +5,7 @@ import MembershipHeader from '../components/membership/MembershipHeader';
 import MembershipFilters from '../components/membership/MembershipFilters';
 import MembershipTable from '../components/membership/MembershipTable';
 import MembershipModal from '../components/membership/MembershipModal';
-import MembershipReports from './MembershipReports';
+import MembershipReports from '../components/membership/MembershipReports';
 
 const API_BASE_URL = 'http://localhost:3000';
 

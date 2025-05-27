@@ -7,6 +7,20 @@ import FeeManagement from './pages/FeeManagement';
 import EventManagement from './pages/EventManagement';
 import CommitteeManagement from './pages/CommitteeManagement';
 
+const TabButton = ({ active, onClick, children, icon: Icon }) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+      active 
+        ? 'bg-blue-600 text-white shadow-md' 
+        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+    }`}
+  >
+    <Icon size={18} />
+    {children}
+  </button>
+);
+
 function App() {
   const [activeTab, setActiveTab] = useState('students');
 
@@ -16,7 +30,7 @@ function App() {
     { id: 'memberships', label: 'Membership', icon: UserCheck },
     { id: 'fees', label: 'Fee', icon: DollarSign },
     { id: 'events', label: 'Events', icon: Calendar },
-    { id: 'committees', label: 'Committees', icon: Settings }
+    { id: 'committees', label: 'Committees', icon: Settings },
   ];
 
   const renderActiveComponent = () => {
