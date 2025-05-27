@@ -64,7 +64,7 @@ This document outlines the various reports to be generated for tracking organiza
 ---
 These reports help to better understand and manage the dynamics, obligations, and participation within the organization/s.
 
-## Technology Stack
+# Technology Stack
 
 The application is built using the following technologies:
 
