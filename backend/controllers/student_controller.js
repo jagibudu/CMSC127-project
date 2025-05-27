@@ -1,6 +1,9 @@
 // controllers/student_controller.js
 
 const table = process.env.DB_STUDENTTABLE || 'STUDENT';
+const FEE_TABLE = process.env.DB_FEETABLE || 'FEE';
+const BELONGS_TO_TABLE = process.env.DB_BELONGSTOTABLE || 'BELONGS_TO';
+
 
 // Helper function for error handling
 const handleError = (res, error, msg) => {
@@ -92,6 +95,22 @@ export const updateStudentRecord = async (req, res) => {
   }
 };
 
+// Helper function to check for dependent records
+const hasDependentRecords = async (pool, student_number) => {
+  const [feeResults] = await pool.query(
+    `SELECT COUNT(*) AS count FROM ${FEE_TABLE} WHERE student_number = ?`,
+    [student_number]
+  );
+  const [membershipResults] = await pool.query(
+    `SELECT COUNT(*) AS count FROM ${BELONGS_TO_TABLE} WHERE student_number = ?`,
+    [student_number]
+  );
+  return {
+    hasFees: feeResults[0].count > 0,
+    hasMemberships: membershipResults[0].count > 0
+  };
+};
+
 export const deleteStudentRecord = async (req, res) => {
   const { student_number } = req.body;
   
@@ -102,6 +121,14 @@ export const deleteStudentRecord = async (req, res) => {
   try {
     if (!(await studentExists(req.pool, student_number))) {
       return res.status(404).send('Student does not exist');
+    }
+
+    const { hasFees, hasMemberships } = await hasDependentRecords(req.pool, student_number);
+    if (hasFees) {
+      return res.status(400).send('Cannot delete student because they have associated fee records');
+    }
+    if (hasMemberships) {
+      return res.status(400).send('Cannot delete student because they have associated membership records');
     }
 
     await req.pool.query(

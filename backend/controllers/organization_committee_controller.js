@@ -1,4 +1,6 @@
 // controllers/organization_committee_controller.js
+const table = process.env.DB_ORGANIZATIONCOMMITTEETABLE;
+const BELONGS_TO_TABLE = process.env.DB_BELONGSTOTABLE || 'BELONGS_TO';
 
 export const getAllCommittees = async (req, res) => {
     try {
@@ -57,16 +59,32 @@ export const updateCommitteeRecord = async (req, res) => {
     }
 };
 
+
+// Helper function to check for dependent records
+const hasDependentRecords = async (pool, committee_id) => {
+  const [membershipResults] = await pool.query(
+    `SELECT COUNT(*) AS count FROM ${BELONGS_TO_TABLE} WHERE committee_id = ?`,
+    [committee_id]
+  );
+  return {
+    hasMemberships: membershipResults[0].count > 0
+  };
+};
+
 export const deleteCommitteeRecord = async (req, res) => {
     const { committee_id } = req.body;
     
     if (!committee_id) return res.status(400).send("committee_id is required");
     
     try {
-        const table = process.env.DB_ORGANIZATIONCOMMITTEETABLE;
         const [existing] = await req.pool.query(`SELECT COUNT(*) AS count FROM ${table} WHERE committee_id = ?`, [committee_id]);
         
         if (existing[0].count === 0) return res.status(404).send("Committee does not exist");
+
+        const { hasMemberships } = await hasDependentRecords(req.pool, committee_id);
+        if (hasMemberships) {
+          return res.status(400).send("Cannot delete committee because it has associated membership records");
+        }
 
         await req.pool.query(`DELETE FROM ${table} WHERE committee_id = ?`, [committee_id]);
         res.status(200).send(`Committee ${committee_id} deleted successfully`);
