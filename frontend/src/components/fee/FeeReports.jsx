@@ -112,11 +112,12 @@ const FeeReports = () => {
           break;
 
         case 'highest-debtors':
-          if (!filters.year || !filters.semester) {
-            setError('Please select year and semester');
+          if (!filters.organization_id || !filters.year || !filters.semester) {
+            setError('Please select organization, year, and semester');
             return;
           }
           url = `${API_BASE}/fee/debtors`;
+          params.append('organization_id', filters.organization_id);
           params.append('year', filters.year);
           params.append('semester', filters.semester);
           if (filters.limit) params.append('limit', filters.limit);
@@ -348,7 +349,7 @@ const FeeReports = () => {
       case 'highest-debtors':
         return (
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-[#212121] border-l-4 border-[#ffca28] pl-3">Highest Debtors by Semester</h4>
+            <h4 className="text-lg font-semibold text-[#212121] border-l-4 border-[#ffca28] pl-3">Highest Debtors by Organization and Semester</h4>
             {Array.isArray(reportData) && reportData.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse">
@@ -357,6 +358,7 @@ const FeeReports = () => {
                       <th className="border border-[#b0bec5] px-4 py-2 text-left text-[#212121] font-medium">Rank</th>
                       <th className="border border-[#b0bec5] px-4 py-2 text-left text-[#212121] font-medium">Student</th>
                       <th className="border border-[#b0bec5] px-4 py-2 text-left text-[#212121] font-medium">Student Number</th>
+                      <th className="border border-[#b0bec5] px-4 py-2 text-left text-[#212121] font-medium">Organization</th>
                       <th className="border border-[#b0bec5] px-4 py-2 text-left text-[#212121] font-medium">Total Debt</th>
                       <th className="border border-[#b0bec5] px-4 py-2 text-left text-[#212121] font-medium">Number of Fees</th>
                     </tr>
@@ -369,6 +371,7 @@ const FeeReports = () => {
                           {debtor.first_name} {debtor.last_name}
                         </td>
                         <td className="border border-[#b0bec5] px-4 py-2 text-[#212121]">{debtor.student_number}</td>
+                        <td className="border border-[#b0bec5] px-4 py-2 text-[#212121]">{debtor.organization_name}</td>
                         <td className="border border-[#b0bec5] px-4 py-2 text-[#ffca28] font-semibold">
                           ${parseFloat(debtor.total_debt).toFixed(2)}
                         </td>
@@ -379,7 +382,7 @@ const FeeReports = () => {
                 </table>
               </div>
             ) : (
-              <div className="text-center py-4 text-[#ffca28]">No debtors found for the selected semester.</div>
+              <div className="text-center py-4 text-[#ffca28]">No debtors found for the selected organization and semester.</div>
             )}
           </div>
         );
@@ -512,13 +515,13 @@ const FeeReports = () => {
               <FileText className="w-6 h-6 text-[#7b1fa2] mr-2" />
               <div>
                 <h4 className="font-semibold text-[#212121] text-sm">Highest Debtors</h4>
-                <p className="text-xs text-[#424242] mt-1">Requires year, semester</p>
+                <p className="text-xs text-[#424242] mt-1">Requires organization, year, semester</p>
               </div>
             </div>
             <Button
               variant="primary"
               onClick={() => generateReport('highest-debtors')}
-              disabled={loading || !filters.year || !filters.semester}
+              disabled={loading || !filters.organization_id || !filters.year || !filters.semester}
               className="w-full text-sm bg-[#b0bec5] hover:bg-[#7b1fa2] text-[#ffffff] disabled:bg-[#e0e0e0] disabled:text-[#616161]"
             >
               {loading && activeReport === 'highest-debtors' ? 'Generating...' : 'Generate Report'}

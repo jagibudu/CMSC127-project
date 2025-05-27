@@ -205,11 +205,13 @@ export const getTotalFeesByOrganization = async (req, res) => {
   }
 };
 
+
+// Modified function to get highest debtors by semester for a specific organization
 export const getHighestDebtorsBySemester = async (req, res) => {
-  const { year, semester, limit } = req.query;
+  const { organization_id, year, semester, limit } = req.query;
   
-  if (!year || !semester) {
-    return handleValidationError(res, "year and semester are required");
+  if (!organization_id || !year || !semester) {
+    return handleValidationError(res, "organization_id, year, and semester are required");
   }
   
   try {
@@ -219,25 +221,28 @@ export const getHighestDebtorsBySemester = async (req, res) => {
         s.first_name,
         s.last_name,
         SUM(f.amount) as total_debt,
-        COUNT(f.fee_id) as fee_count
+        COUNT(f.fee_id) as fee_count,
+        o.organization_name
       FROM ${table} f 
       LEFT JOIN STUDENT s ON f.student_number = s.student_number 
+      LEFT JOIN ORGANIZATION o ON f.organization_id = o.organization_id
       WHERE f.status = 'Unpaid' 
+        AND f.organization_id = ?
         AND YEAR(f.date_issue) = ?
         AND CASE 
           WHEN ? = 'First' THEN MONTH(f.date_issue) BETWEEN 1 AND 6
           WHEN ? = 'Second' THEN MONTH(f.date_issue) BETWEEN 7 AND 12
           ELSE 1=1
         END
-      GROUP BY f.student_number, s.first_name, s.last_name
+      GROUP BY f.student_number, s.first_name, s.last_name, o.organization_name
       ORDER BY total_debt DESC
       LIMIT ?
-    `, [year, semester, semester, parseInt(limit) || 10]);
+    `, [organization_id, year, semester, semester, parseInt(limit) || 10]);
     res.json(results);
   } catch (error) {
-    handleError(res, error, "Error fetching highest debtors");
+    handleError(res, error, "Error fetching highest debtors by semester for organization");
   }
-};
+}
 
 // Helper function to check if fee exists
 const feeExists = async (pool, fee_id) => {
