@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, FileText, CreditCard } from 'lucide-react';
+import { Plus, FileText, CreditCard, BarChart3 } from 'lucide-react';
 import Button from '../components/ui/Button';
-import FeeForm from '../components/fee/FeeForm';
 import FeeFilters from '../components/fee/FeeFilters';
 import FeeTable from '../components/fee/FeeTable';
 import FeeReports from '../components/fee/FeeReports';
+import FeeModal from '../components/fee/FeeModal';
 
 const FeeManagement = () => {
   const [activeTab, setActiveTab] = useState('management');
@@ -12,8 +12,9 @@ const FeeManagement = () => {
   const [students, setStudents] = useState([]);
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showForm, setShowForm] = useState(false);
-  const [editingFee, setEditingFee] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState('create');
+  const [selectedFee, setSelectedFee] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
@@ -69,12 +70,11 @@ const FeeManagement = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (mode) => {
     setLoading(true);
-
     try {
-      const url = editingFee ? `${API_BASE}/fee` : `${API_BASE}/fee`;
-      const method = editingFee ? 'PUT' : 'POST';
+      const url = mode === 'edit' ? `${API_BASE}/fee` : `${API_BASE}/fee`;
+      const method = mode === 'edit' ? 'PUT' : 'POST';
       
       const response = await fetch(url, {
         method,
@@ -87,6 +87,7 @@ const FeeManagement = () => {
       if (response.ok) {
         await fetchFees();
         resetForm();
+        setShowModal(false);
       } else {
         console.error('Error saving fee');
       }
@@ -98,7 +99,7 @@ const FeeManagement = () => {
   };
 
   const handleEdit = (fee) => {
-    setEditingFee(fee);
+    setSelectedFee(fee);
     setFormData({
       fee_id: fee.fee_id,
       label: fee.label || '',
@@ -109,19 +110,22 @@ const FeeManagement = () => {
       organization_id: fee.organization_id,
       student_number: fee.student_number
     });
-    setShowForm(true);
+    setModalMode('edit');
+    setShowModal(true);
   };
 
-  const handleDelete = async (feeId) => {
-    if (window.confirm('Are you sure you want to delete this fee?')) {
+  const handleDelete = async () => {
+    if (selectedFee) {
       setLoading(true);
       try {
-        const response = await fetch(`${API_BASE}/fee?fee_id=${feeId}`, {
+        const response = await fetch(`${API_BASE}/fee?fee_id=${selectedFee.fee_id}`, {
           method: 'DELETE',
         });
         
         if (response.ok) {
           await fetchFees();
+          setShowModal(false);
+          setSelectedFee(null);
         }
       } catch (error) {
         console.error('Error deleting fee:', error);
@@ -129,6 +133,18 @@ const FeeManagement = () => {
         setLoading(false);
       }
     }
+  };
+
+  const openDeleteModal = (fee) => {
+    setSelectedFee(fee);
+    setModalMode('delete');
+    setShowModal(true);
+  };
+
+  const openCreateModal = () => {
+    resetForm();
+    setModalMode('create');
+    setShowModal(true);
   };
 
   const updateFeeStatus = async (feeId, newStatus) => {
@@ -160,8 +176,8 @@ const FeeManagement = () => {
       organization_id: '',
       student_number: ''
     });
-    setEditingFee(null);
-    setShowForm(false);
+    setSelectedFee(null);
+    setShowModal(false);
   };
 
   const filteredFees = fees.filter(fee => {
@@ -178,91 +194,122 @@ const FeeManagement = () => {
 
   const tabs = [
     { id: 'management', label: 'Fee Management', icon: CreditCard },
-    { id: 'reports', label: 'Reports', icon: FileText }
+    { id: 'reports', label: 'Reports', icon: BarChart3 }
   ];
 
+  const totalFees = filteredFees.length;
+  const unpaidFees = filteredFees.filter(f => f.status === 'Unpaid').length;
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Fee Management System</h2>
-          <p className="text-gray-600">Track and manage organization fees and generate reports</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
+      <div className="mb-8">
+        <div className="bg-gradient-to-r from-[#158fd4] to-[#01050b] text-white rounded-2xl p-8 shadow-xl">
+          <h1 className="text-3xl font-bold mb-2">Fee Management System</h1>
+          <p className="text-blue-100">Track and manage organization fees and generate reports</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-100 text-sm">Total Fees</p>
+                  <p className="text-2xl font-bold">{totalFees}</p>
+                </div>
+                <CreditCard className="h-8 w-8 text-blue-200" />
+              </div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-100 text-sm">Unpaid Fees</p>
+                  <p className="text-2xl font-bold">{unpaidFees}</p>
+                </div>
+                <FileText className="h-8 w-8 text-green-300" />
+              </div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-100 text-sm">Organizations</p>
+                  <p className="text-2xl font-bold">{organizations.length}</p>
+                </div>
+                <BarChart3 className="h-8 w-8 text-[#9daecc]" />
+              </div>
+            </div>
+          </div>
         </div>
-        {activeTab === 'management' && (
-          <Button
-            variant="primary"
-            onClick={() => setShowForm(true)}
-            className="flex items-center gap-2"
-          >
-            <Plus size={20} />
-            Add Fee
-          </Button>
-        )}
       </div>
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <div className="bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-200">
+          <nav className="flex space-x-1 px-6" aria-label="Tabs">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`${
+                    activeTab === tab.id
+                      ? 'bg-white text-[#158fd4] shadow-sm border-t-2 border-[#158fd4]'
+                      : 'text-gray-600 hover:text-[#158fd4] hover:bg-white/50'
+                  } whitespace-nowrap py-4 px-6 font-medium text-sm flex items-center gap-2 rounded-t-xl transition-all duration-200`}
+                >
+                  <Icon size={16} />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
 
-      {/* Navigation Tabs */}
-      <div className="border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
-                  activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <Icon size={16} />
-                {tab.label}
-              </button>
-            );
-          })}
-        </nav>
-      </div>
+        <div className="p-8">
+          {activeTab === 'management' && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <Button
+                  variant="primary"
+                  onClick={openCreateModal}
+                  className="flex items-center gap-2 bg-[#158fd4] hover:bg-[#1278b0] text-white"
+                >
+                  <Plus size={20} />
+                  Add Fee
+                </Button>
+              </div>
 
-      {/* Tab Content */}
-      {activeTab === 'management' && (
-        <div className="space-y-6">
-          {/* Filters */}
-          <FeeFilters
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-          />
+              <FeeFilters
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                statusFilter={statusFilter}
+                setStatusFilter={setStatusFilter}
+              />
 
-          {/* Fee Form */}
-          {showForm && (
-            <FeeForm
-              formData={formData}
-              setFormData={setFormData}
-              onSubmit={handleSubmit}
-              onCancel={resetForm}
-              loading={loading}
-              editingFee={editingFee}
-              students={students}
-              organizations={organizations}
-            />
+              <FeeTable
+                fees={filteredFees}
+                loading={loading}
+                onEdit={handleEdit}
+                onDelete={openDeleteModal}
+                onUpdateStatus={updateFeeStatus}
+              />
+            </div>
           )}
 
-          {/* Fee Table */}
-          <FeeTable
-            fees={filteredFees}
-            loading={loading}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onUpdateStatus={updateFeeStatus}
-          />
+          {activeTab === 'reports' && (
+            <FeeReports />
+          )}
         </div>
-      )}
+      </div>
 
-      {activeTab === 'reports' && (
-        <FeeReports />
-      )}
+      {/* Fee Modal */}
+      <FeeModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        modalMode={modalMode}
+        selectedFee={selectedFee}
+        formData={formData}
+        setFormData={setFormData}
+        students={students}
+        organizations={organizations}
+        onSubmit={handleSubmit}
+        onDelete={handleDelete}
+      />
     </div>
   );
 };
