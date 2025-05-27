@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Search, AlertCircle } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Users, X, ChevronsLeft, ChevronsRight, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
 
 const API_BASE_URL = 'http://localhost:3000';
 
 const Button = ({ variant = 'primary', size = 'md', onClick, children, className = '', disabled = false }) => {
   const baseClasses = 'font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
   const variants = {
-    primary: 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500',
+    primary: 'bg-[#158fd4] hover:bg-[#0e4a80] text-white focus:ring-blue-500',
     success: 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500',
     danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
     warning: 'bg-yellow-600 hover:bg-yellow-700 text-white focus:ring-yellow-500',
-    secondary: 'bg-gray-600 hover:bg-gray-700 text-white focus:ring-gray-500'
+    secondary: 'bg-[#9daecc] hover:bg-[#0e4a80] text-white focus:ring-gray-500',
+    outline: 'border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 focus:ring-blue-500'
   };
   const sizes = {
     sm: 'px-3 py-1.5 text-sm',
@@ -31,7 +32,7 @@ const Button = ({ variant = 'primary', size = 'md', onClick, children, className
 
 const Input = ({ label, placeholder, value, onChange, type = 'text', required = false, disabled = false }) => (
   <div className="mb-4">
-    <label className="block text-sm font-medium text-gray-700 mb-1">
+    <label className="block text-sm font-medium text-[#01050b] mb-2">
       {label} {required && <span className="text-red-500">*</span>}
     </label>
     <input
@@ -40,28 +41,28 @@ const Input = ({ label, placeholder, value, onChange, type = 'text', required = 
       onChange={onChange}
       placeholder={placeholder}
       disabled={disabled}
-      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+      className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#158fd4] focus:border-[#158fd4] transition-all duration-200"
       required={required}
     />
   </div>
 );
 
-const Modal = ({ isOpen, onClose, title, children }) => {
+const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
   if (!isOpen) return null;
   
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+      <div className={`bg-[#ffffff] border-[#9daecc] rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto ${className}`}>
+        <div className="flex items-center justify-between p-6 border-b border-[#9daecc]">
+          <h3 className="text-xl font-semibold text-[#01050b]">{title}</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 focus:outline-none"
+            className="text-[#01050b] hover:text-[#0e4a80] focus:outline-none transition-colors"
           >
-            ✕
+            <X size={24} />
           </button>
         </div>
-        <div className="p-6">
+        <div className="p-6 text-[#01050b]">
           {children}
         </div>
       </div>
@@ -86,7 +87,7 @@ const Alert = ({ type = 'info', message, onClose }) => {
         </div>
         {onClose && (
           <button onClick={onClose} className="text-current opacity-70 hover:opacity-100">
-            ✕
+            <X size={16} />
           </button>
         )}
       </div>
@@ -106,6 +107,8 @@ const OrganizationManagement = () => {
     organization_id: '',
     organization_name: ''
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchOrganizations();
@@ -263,94 +266,222 @@ const OrganizationManagement = () => {
     return orgId.includes(search) || orgName.includes(search);
   });
 
-  return (
-    <div className="space-y-6">
-      {alert && (
-        <Alert 
-          type={alert.type} 
-          message={alert.message} 
-          onClose={() => setAlert(null)} 
-        />
-      )}
+  const totalPages = Math.ceil(filteredOrganizations.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentOrganizations = filteredOrganizations.slice(startIndex, endIndex);
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="p-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Organization Management</h2>
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  const goToFirstPage = () => setCurrentPage(1);
+  const goToLastPage = () => setCurrentPage(totalPages);
+  const goToPreviousPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
+  const goToNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  const goToPage = (page) => setCurrentPage(page);
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      let startPage = Math.max(1, currentPage - 2);
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+      
+      if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+    }
+    
+    return pages;
+  };
+
+  const totalCount = filteredOrganizations.length;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
+      <div className="mb-8">
+        <div className="bg-gradient-to-r from-[#158fd4] to-[#01050b] text-white rounded-2xl p-8 shadow-xl">
+          <h1 className="text-3xl font-bold mb-2">Organization Management</h1>
+          <p className="text-blue-100">Manage organization information and records</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-100 text-sm">Total Organizations</p>
+                  <p className="text-2xl font-bold">{totalCount}</p>
+                </div>
+                <Users className="h-8 w-8 text-blue-200" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <div className="p-8 border-b border-gray-100">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
             <Button onClick={openCreateModal} className="flex items-center gap-2">
               <Plus size={16} />
               Add Organization
             </Button>
           </div>
-
-          <div className="mb-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-              <input
-                type="text"
-                placeholder="Search organizations..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+          <div className="relative max-w-md">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <input
+              type="text"
+              placeholder="Search organizations..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#158fd4] focus:border-[#158fd4] transition-all duration-200"
+            />
           </div>
+        </div>
+
+        <div className="space-y-4 p-8">
+          {alert && (
+            <Alert 
+              type={alert.type} 
+              message={alert.message} 
+              onClose={() => setAlert(null)} 
+            />
+          )}
 
           {loading ? (
-            <div className="text-center py-8">
-              <div className="inline-block w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-              <p className="mt-2 text-gray-600">Loading organizations...</p>
+            <div className="text-center py-8 text-[#616161] text-xs">
+              Loading...
             </div>
           ) : filteredOrganizations.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              {organizations.length === 0 ? 'No organizations found' : 'No organizations match your search'}
+            <div className="text-center py-8 text-[#616161] text-xs">
+              No organizations found
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-900">Organization ID</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-900">Organization Name</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-900">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredOrganizations.map((organization) => (
-                    <tr key={organization.organization_id} className="hover:bg-gray-50">
-                      <td className="border border-gray-300 px-4 py-3 font-mono text-sm">{organization.organization_id}</td>
-                      <td className="border border-gray-300 px-4 py-3">{organization.organization_name || '-'}</td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <div className="flex gap-2">
-                          <Button
-                            variant="warning"
-                            size="sm"
-                            onClick={() => openEditModal(organization)}
-                            className="flex items-center gap-1"
-                          >
-                            <Edit size={14} />
-                            Edit
-                          </Button>
-                          <Button
-                            variant="danger"
-                            size="sm"
-                            onClick={() => openDeleteModal(organization)}
-                            className="flex items-center gap-1"
-                          >
-                            <Trash2 size={14} />
-                            Delete
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <>
+              <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+                <div className="w-full">
+                  <table className="w-full">
+                    <thead className="bg-gradient-to-r from-[#158fd4] to-[#0e4a80] text-white">
+                      <tr>
+                        <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                          Organization ID
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                          Organization Name
+                        </th>
+                        <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white">
+                      {currentOrganizations.map((organization, index) => (
+                        <tr
+                          key={`${organization.organization_id}-${index}`}
+                          className="odd:bg-[#ffffff] even:bg-[#f9f9f9] hover:bg-[#f5f5f5] transition-colors"
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap border-r border-[#b0bec5]">
+                            <div className="text-sm font-semibold text-[#212121]">
+                              {organization.organization_id}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap border-r border-[#b0bec5]">
+                            <div className="text-sm text-[#212121]">
+                              {organization.organization_name || '-'}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex items-center justify-center gap-2">
+                              <button
+                                onClick={() => openEditModal(organization)}
+                                className="text-[#1976d2] hover:text-[#1565c0]"
+                                aria-label={`Edit organization ${organization.organization_id}`}
+                              >
+                                <Edit2 size={16} />
+                              </button>
+                              <button
+                                onClick={() => openDeleteModal(organization)}
+                                className="text-[#c62828] hover:text-[#b71c1c]"
+                                aria-label={`Delete organization ${organization.organization_id}`}
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div className="flex items-center justify-between bg-white px-6 py-4 rounded-xl shadow-sm border border-gray-100">
+                <div className="flex items-center text-sm text-gray-600">
+                  <span>
+                    Showing {startIndex + 1} to {Math.min(endIndex, totalCount)} of {totalCount} results
+                  </span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={goToFirstPage}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150"
+                    aria-label="Go to first page"
+                  >
+                    <ChevronsLeft size={16} />
+                  </button>
+                  <button
+                    onClick={goToPreviousPage}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150"
+                    aria-label="Go to previous page"
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <div className="flex space-x-1">
+                    {getPageNumbers().map((pageNum) => (
+                      <button
+                        key={pageNum}
+                        onClick={() => goToPage(pageNum)}
+                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                          currentPage === pageNum
+                            ? 'bg-[#158fd4] text-white shadow-sm'
+                            : 'text-gray-600 hover:bg-gray-50 border border-gray-200'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={goToNextPage}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150"
+                    aria-label="Go to next page"
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                  <button
+                    onClick={goToLastPage}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150"
+                    aria-label="Go to last page"
+                  >
+                    <ChevronsRight size={16} />
+                  </button>
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>
-
       <Modal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
@@ -359,21 +490,30 @@ const OrganizationManagement = () => {
           modalMode === 'edit' ? 'Edit Organization' :
           'Delete Organization'
         }
+        className="bg-[#ffffff] border-[#9daecc] text-[#01050b]"
       >
         {modalMode === 'delete' ? (
           <div>
-            <p className="text-gray-600 mb-6">
+            <p className="text-[#01050b] mb-6">
               Are you sure you want to delete organization <strong>{selectedOrganization?.organization_id}</strong>?
               {selectedOrganization?.organization_name && (
                 <span> ({selectedOrganization.organization_name})</span>
-              )}
+              )}? This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
-              <Button variant="secondary" onClick={() => setShowModal(false)}>
+              <Button
+                variant="secondary"
+                onClick={() => setShowModal(false)}
+                className="px-3 py-1 text-sm bg-[#9daecc] hover:bg-[#0e4a80] text-[#ffffff] rounded"
+              >
                 Cancel
               </Button>
-              <Button variant="danger" onClick={handleDelete}>
-                Delete Organization
+              <Button
+                variant="danger"
+                onClick={handleDelete}
+                className="px-3 py-1 text-sm bg-[#158fd4] hover:bg-[#0e4a80] text-[#ffffff] rounded"
+              >
+                Delete
               </Button>
             </div>
           </div>
@@ -394,12 +534,17 @@ const OrganizationManagement = () => {
               onChange={(e) => setFormData({...formData, organization_name: e.target.value})}
             />
             <div className="flex justify-end gap-3 mt-6">
-              <Button variant="secondary" onClick={() => setShowModal(false)}>
+              <Button
+                variant="secondary"
+                onClick={() => setShowModal(false)}
+                className="px-3 py-1 text-sm bg-[#9daecc] hover:bg-[#0e4a80] text-[#ffffff] rounded"
+              >
                 Cancel
               </Button>
-              <Button 
-                variant={modalMode === 'create' ? 'success' : 'warning'}
+              <Button
+                variant="danger"
                 onClick={modalMode === 'create' ? handleCreate : handleUpdate}
+                className="px-3 py-1 text-sm bg-[#158fd4] hover:bg-[#0e4a80] text-[#ffffff] rounded"
               >
                 {modalMode === 'create' ? 'Create Organization' : 'Update Organization'}
               </Button>
