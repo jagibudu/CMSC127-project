@@ -132,7 +132,7 @@ MEMBERSHIP OBJECT FIELDS
 - committee_name (from JOIN with ORGANIZATION_COMMITTEE)
 
 ----------------------------------------------------
-MEMBERSHIP ENDPOINTS
+MEMBERSHIP ENDPOINTS (UPDATED)
 ----------------------------------------------------
 GET /membership
 Parameters: None
@@ -145,6 +145,10 @@ Return: Array of membership objects with remaining balance from BELONGS_TO_WITH_
 GET /membership/active
 Query Parameters: organization_id (optional)
 Return: Array of active membership objects
+
+GET /membership/roles
+Query Parameters: organization_id (optional)
+Return: Array of distinct roles available
 
 GET /membership/student/:student_number
 Parameters: student_number (route param)
@@ -171,11 +175,11 @@ Parameters: student_number, organization_id
 Return: "Membership for student {student_number} in organization {organization_id} deleted successfully"
 
 ----------------------------------------------------
-MEMBERSHIP REPORT ENDPOINTS
+MEMBERSHIP REPORT ENDPOINTS (UPDATED)
 ----------------------------------------------------
 GET /membership/filter
 Query Parameters: role, status, gender, degree_program, batch, committee_name, organization_id
-Return: Array of filtered membership objects with student details
+Return: Array of filtered membership objects with student details and remaining_balance
 
 GET /membership/executive
 Query Parameters: organization_id (required), year (required)
@@ -209,7 +213,7 @@ FEE OBJECT FIELDS
 - organization_name (from JOIN)
 
 ----------------------------------------------------
-BASIC FEE ENDPOINTS
+FEE ENDPOINTS (UPDATED)
 ----------------------------------------------------
 GET /fee
 Parameters: None
@@ -244,11 +248,10 @@ Parameters: fee_id
 Return: "Fee {fee_id} deleted successfully"
 
 ----------------------------------------------------
-ADVANCED FEE REPORT ENDPOINTS
+FEE REPORT ENDPOINTS (UPDATED)
 ----------------------------------------------------
 GET /fee/unpaid/organization-semester
-Query Parameters: organization_id, year, semester
-Required: organization_id, year, semester
+Query Parameters: organization_id (required), year (required), semester (required)
 Return: Array of unpaid fees filtered by organization and semester
 
 GET /fee/unpaid/student/:student_number
@@ -256,25 +259,15 @@ Parameters: student_number (route param)
 Return: Array of unpaid fees for specific student
 
 GET /fee/late
-Query Parameters: organization_id, year
-Required: organization_id, year
+Query Parameters: organization_id (required), year (required)
 Return: Array of late fees with days_overdue calculation
 
 GET /fee/totals
-Query Parameters: organization_id, as_of_date (optional)
-Required: organization_id
-Return: { 
-  total_fees, 
-  total_amount, 
-  paid_amount, 
-  unpaid_amount, 
-  paid_count, 
-  unpaid_count 
-}
+Query Parameters: organization_id (required), as_of_date (optional)
+Return: { total_fees, total_amount, paid_amount, unpaid_amount, paid_count, unpaid_count }
 
 GET /fee/debtors
-Query Parameters: year, semester, limit (optional, default: 1)
-Required: year, semester
+Query Parameters: year (required), semester (required), limit (optional, default: 1)
 Return: Array of highest debtors with total_debt and fee_count
 
 ----------------------------------------------------
