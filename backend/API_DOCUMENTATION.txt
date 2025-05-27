@@ -290,6 +290,8 @@ MEMBERSHIP STATUS VALUES
 - 'Active': Currently active member
 - 'Alumni': Former member who has graduated
 - 'Inactive': Temporarily inactive member
+- 'Suspended'
+- 'Expelled'
 
 ----------------------------------------------------
 MEMBERSHIP ROLE VALUES
