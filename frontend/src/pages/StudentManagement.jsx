@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Search, Users, GraduationCap, UserCheck, Filter, X, ChevronsLeft, ChevronsRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Users, User, Filter, X, ChevronsLeft, ChevronsRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:3000';
@@ -72,7 +72,7 @@ const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
   if (!isOpen) return null;
   
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center p-4 z-50">
       <div className={`bg-[#ffffff] border-[#9daecc] rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto ${className}`}>
         <div className="flex items-center justify-between p-6 border-b border-[#9daecc]">
           <h3 className="text-xl font-semibold text-[#01050b]">{title}</h3>
@@ -125,7 +125,7 @@ const StudentTableRow = ({ student, onEdit, onDelete }) => {
       <td className="px-6 py-4 whitespace-nowrap text-sm text-[#212121] border-r border-[#b0bec5]">
         {student.degree_program || '-'}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+      <td className="px-6 py-4 text-sm font-medium">
         <div className="flex items-center gap-2">
           <button
             onClick={() => onEdit(student)}
@@ -388,7 +388,7 @@ const StudentManagement = () => {
                   <p className="text-blue-100 text-sm">Male Students</p>
                   <p className="text-2xl font-bold">{maleCount}</p>
                 </div>
-                <UserCheck className="h-8 w-8 text-green-300" />
+                <User className="h-8 w-8 text-[#a5d6a7]" />
               </div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
@@ -397,13 +397,13 @@ const StudentManagement = () => {
                   <p className="text-blue-100 text-sm">Female Students</p>
                   <p className="text-2xl font-bold">{femaleCount}</p>
                 </div>
-                <GraduationCap className="h-8 w-8 text-[#9daecc]" />
+                <User className="h-8 w-8 text-[#f8bbd9]" />
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div className="space-y-4">
+      <div className="space-y-4 p-8">
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           <div className="p-8 border-b border-gray-100">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
@@ -475,7 +475,7 @@ const StudentManagement = () => {
             </div>
           )}
         </div>
-        <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden max-w-6xl mx-auto">
           <div className="w-full">
             {loading ? (
               <div className="text-center py-8 text-[#616161] text-xs">Loading...</div>
@@ -485,19 +485,19 @@ const StudentManagement = () => {
               <table className="w-full">
                 <thead className="bg-gradient-to-r from-[#158fd4] to-[#0e4a80] text-white">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider w-[20%]">
+                    <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider w-[20%]">
                       Student Number
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider w-[25%]">
+                    <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider w-[25%]">
                       Name
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider w-[15%]">
+                    <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider w-[15%]">
                       Gender
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider w-[25%]">
+                    <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider w-[25%]">
                       Degree Program
                     </th>
-                    <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider w-[15%]">
+                    <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider w-[15%]">
                       Actions
                     </th>
                   </tr>
@@ -517,7 +517,7 @@ const StudentManagement = () => {
           </div>
         </div>
         {totalPages > 1 && (
-          <div className="flex items-center justify-between bg-white px-6 py-4 rounded-xl shadow-sm border border-gray-100">
+          <div className="flex items-center justify-between bg-white px-6 py-4 rounded-xl shadow-sm border border-gray-100 max-w-6xl mx-auto">
             <div className="flex items-center text-sm text-gray-600">
               <span>
                 Showing {startIndex + 1} to {Math.min(endIndex, totalCount)} of {totalCount} results
@@ -594,14 +594,14 @@ const StudentManagement = () => {
               <Button
                 variant="secondary"
                 onClick={() => setShowModal(false)}
-                className="px-3 py-1 text-sm bg-[#9daecc] hover:bg-[#0e4a80] text-[#ffffff] rounded"
+                className="px-3 py-1 text-sm rounded"
               >
                 Cancel
               </Button>
               <Button
                 variant="danger"
                 onClick={handleDelete}
-                className="px-3 py-1 text-sm bg-[#158fd4] hover:bg-[#0e4a80] text-[#ffffff] rounded"
+                className="px-3 py-1 text-sm rounded"
               >
                 Delete
               </Button>
@@ -653,14 +653,14 @@ const StudentManagement = () => {
               <Button
                 variant="secondary"
                 onClick={() => setShowModal(false)}
-                className="px-3 py-1 text-sm bg-[#9daecc] hover:bg-[#0e4a80] text-[#ffffff] rounded"
+                className="px-3 py-1 text-sm rounded"
               >
                 Cancel
               </Button>
               <Button
-                variant="danger"
+                variant="primary"
                 onClick={modalMode === 'create' ? handleCreate : handleUpdate}
-                className="px-3 py-1 text-sm bg-[#158fd4] hover:bg-[#0e4a80] text-[#ffffff] rounded"
+                className="px-3 py-1 text-sm rounded"
               >
                 {modalMode === 'create' ? 'Create Student' : 'Update Student'}
               </Button>
