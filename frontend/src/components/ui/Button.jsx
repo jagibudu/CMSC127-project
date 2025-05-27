@@ -3,11 +3,11 @@ import React from 'react';
 const Button = ({ variant = 'primary', size = 'md', onClick, children, className = '', disabled = false }) => {
   const baseClasses = 'font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
   const variants = {
-    primary: 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500',
-    success: 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500',
-    danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
-    warning: 'bg-yellow-600 hover:bg-yellow-700 text-white focus:ring-yellow-500',
-    secondary: 'bg-gray-600 hover:bg-gray-700 text-white focus:ring-gray-500'
+    primary: 'bg-[#158fd4] hover:bg-[#0e4a80] text-white focus:ring-[#9daecc]',
+    success: 'bg-green-600 hover:bg-green-700 text-white focus:ring-[#9daecc]',
+    danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-[#9daecc]',
+    warning: 'bg-yellow-600 hover:bg-yellow-700 text-white focus:ring-[#9daecc]',
+    secondary: 'bg-[#0e4a80] hover:bg-[#01050b] text-[#ffffff] focus:ring-[#9daecc]'
   };
   const sizes = {
     sm: 'px-3 py-1.5 text-sm',
