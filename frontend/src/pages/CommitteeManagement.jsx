@@ -72,7 +72,7 @@ const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
   if (!isOpen) return null;
   
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 backdrop-blur-md bg-gray-900/30 flex items-center justify-center p-4 z-50">
       <div className={`bg-[#ffffff] border-[#9daecc] rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto ${className}`}>
         <div className="flex items-center justify-between p-6 border-b border-[#9daecc]">
           <h3 className="text-xl font-semibold text-[#01050b]">{title}</h3>
