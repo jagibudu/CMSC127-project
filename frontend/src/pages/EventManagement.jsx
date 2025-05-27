@@ -121,16 +121,17 @@ const EventManagement = () => {
     setShowForm(false);
   };
 
-  const filteredEvents = events.filter(event => {
-    const matchesSearch = 
-      event.event_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.organization_name?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesOrganization = organizationFilter === 'all' || 
-      event.organization_id === organizationFilter;
-    
-    return matchesSearch && matchesOrganization;
-  });
+const filteredEvents = events.filter(event => {
+  const matchesSearch = 
+    event.event_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    event.organization_name?.toLowerCase().includes(searchTerm.toLowerCase());
+  
+  // Fix: Convert organizationFilter to number for proper comparison
+  const matchesOrganization = organizationFilter === 'all' || 
+    event.organization_id === parseInt(organizationFilter);
+  
+  return matchesSearch && matchesOrganization;
+});
 
   return (
     <div className="space-y-6">
@@ -164,18 +165,18 @@ const EventManagement = () => {
               />
             </div>
           </div>
-          <select
+            <select
             value={organizationFilter}
-            onChange={(e) => setOrganizationFilter(e.target.value)}
+            onChange={(e) => setOrganizationFilter(e.target.value)} // This stays the same, but now we handle it in the filter
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
+            >
             <option value="all">All Organizations</option>
             {organizations.map((org) => (
-              <option key={org.organization_id} value={org.organization_id}>
+                <option key={org.organization_id} value={org.organization_id}>
                 {org.organization_name || org.organization_id}
-              </option>
+                </option>
             ))}
-          </select>
+            </select>
         </div>
       </div>
 

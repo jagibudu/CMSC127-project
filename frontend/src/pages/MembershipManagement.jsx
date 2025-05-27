@@ -123,19 +123,21 @@ const RoleBadge = ({ role }) => {
 };
 
 const MembershipManagement = () => {
-  const [memberships, setMemberships] = useState([]);
-  const [students, setStudents] = useState([]);
-  const [organizations, setOrganizations] = useState([]);
-  const [committees, setCommittees] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
-  const [modalMode, setModalMode] = useState('create');
-  const [selectedMembership, setSelectedMembership] = useState(null);
-  const [organizationRoles, setOrganizationRoles] = useState([]);
-  const [filterRoles, setFilterRoles] = useState([]);
-  const [filters, setFilters] = useState({
+    const [memberships, setMemberships] = useState([]);
+    const [students, setStudents] = useState([]);
+    const [organizations, setOrganizations] = useState([]);
+    const [committees, setCommittees] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
+    const [modalMode, setModalMode] = useState('create');
+    const [selectedMembership, setSelectedMembership] = useState(null);
+    const [organizationRoles, setOrganizationRoles] = useState([]);
+    const [filterRoles, setFilterRoles] = useState([]);
+    const [showCustomRole, setShowCustomRole] = useState(false);
+    const [customRole, setCustomRole] = useState('');
+    const [filters, setFilters] = useState({
     organization_id: '',
     status: '',
     role: '',
@@ -151,11 +153,13 @@ const MembershipManagement = () => {
     role: 'Member'
   });
 
-  const statusOptions = [
-    { value: 'Active', label: 'Active' },
-    { value: 'Alumni', label: 'Alumni' },
-    { value: 'Inactive', label: 'Inactive' }
-  ];
+const statusOptions = [
+  { value: 'Active', label: 'Active' },
+  { value: 'Inactive', label: 'Inactive' },
+  { value: 'Alumni', label: 'Alumni' },
+  { value: 'Expelled', label: 'Expelled' },
+  { value: 'Suspended', label: 'Suspended' }
+];
 
   const roleOptions = [
     { value: 'Member', label: 'Member' },
@@ -362,22 +366,28 @@ const resetForm = () => {
     setShowModal(true);
   };
 
-  const filteredMemberships = memberships.filter(membership => {
-    const matchesSearch = 
-      membership.student_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      membership.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      membership.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      membership.organization_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      membership.committee_name?.toLowerCase().includes(searchTerm.toLowerCase());
+const filteredMemberships = memberships.filter(membership => {
+  const matchesSearch = 
+    membership.student_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    membership.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    membership.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    membership.organization_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    membership.committee_name?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesOrg = !filters.organization_id || membership.organization_id === filters.organization_id;
-    const matchesStatus = !filters.status || membership.status === filters.status;
-    const matchesRole = !filters.role || membership.role === filters.role;
-    const matchesGender = !filters.gender || membership.gender === filters.gender;
-    const matchesDegree = !filters.degree_program || membership.degree_program?.toLowerCase().includes(filters.degree_program.toLowerCase());
+  // FIX: Convert both values to strings for comparison
+  const matchesOrg = !filters.organization_id || 
+    membership.organization_id?.toString() === filters.organization_id;
+  
+  const matchesStatus = !filters.status || membership.status === filters.status;
+  const matchesRole = !filters.role || membership.role === filters.role;
+  
+  // FIX: Gender should work fine now with exact matching since DB uses ENUM
+  const matchesGender = !filters.gender || membership.gender === filters.gender;
+  const matchesDegree = !filters.degree_program || 
+    membership.degree_program?.toLowerCase().includes(filters.degree_program.toLowerCase());
 
-    return matchesSearch && matchesOrg && matchesStatus && matchesRole && matchesGender && matchesDegree;
-  });
+  return matchesSearch && matchesOrg && matchesStatus && matchesRole && matchesGender && matchesDegree;
+});
 
   const clearFilters = () => {
     setFilters({
@@ -458,18 +468,19 @@ const resetForm = () => {
                         ))}
                     </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-                  <select
-                    value={filters.gender}
-                    onChange={(e) => setFilters({...filters, gender: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                  >
-                    <option value="">All Genders</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                  </select>
-                </div>
+                    <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                    <select
+                        value={filters.gender}
+                        onChange={(e) => setFilters({...filters, gender: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                    >
+                        <option value="">All Genders</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Degree Program</label>
                   <input
@@ -662,12 +673,62 @@ const resetForm = () => {
                 onChange={(e) => setFormData({...formData, status: e.target.value})}
                 options={statusOptions}
               />
-            <Select
-            label="Role"
-            value={formData.role}
-            onChange={(e) => setFormData({...formData, role: e.target.value})}
-            options={organizationRoles.length > 0 ? organizationRoles : roleOptions}
-            />
+            <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Role
+                </label>
+                <select
+                    value={showCustomRole ? 'custom' : formData.role}
+                    onChange={(e) => {
+                    if (e.target.value === 'custom') {
+                        setShowCustomRole(true);
+                        setFormData({...formData, role: ''});
+                    } else {
+                        setShowCustomRole(false);
+                        setFormData({...formData, role: e.target.value});
+                        setCustomRole('');
+                    }
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                    <option value="">Select...</option>
+                    {(organizationRoles.length > 0 ? organizationRoles : roleOptions).map((option) => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                    ))}
+                    <option value="custom">New Role (Custom)</option>
+                </select>
+                
+                {showCustomRole && (
+                    <div className="mt-2">
+                    <input
+                        type="text"
+                        value={customRole}
+                        onChange={(e) => {
+                        setCustomRole(e.target.value);
+                        setFormData({...formData, role: e.target.value});
+                        }}
+                        placeholder="Enter custom role name..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        autoFocus
+                    />
+                    <div className="flex gap-2 mt-2">
+                        <button
+                        type="button"
+                        onClick={() => {
+                            setShowCustomRole(false);
+                            setFormData({...formData, role: 'Member'});
+                            setCustomRole('');
+                        }}
+                        className="px-3 py-1 text-sm bg-gray-500 hover:bg-gray-600 text-white rounded"
+                        >
+                        Cancel
+                        </button>
+                    </div>
+                    </div>
+                )}
+                </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
               <Button variant="secondary" onClick={() => setShowModal(false)}>
